@@ -1,0 +1,5 @@
+.dashicons, .dashicons-before::before .copy_action_icon {
+    height: auto;
+    width: auto;
+    font-size: 13px;
+}

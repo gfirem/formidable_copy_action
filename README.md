@@ -1,2 +1,2 @@
 # formidable_copy_action
-Action to add data to other form. Some possible uses is use form like log
+Formidable new action plugins that enable to send data between forms

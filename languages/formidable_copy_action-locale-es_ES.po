@@ -1,0 +1,169 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Formidable copy action\n"
+"POT-Creation-Date: 2016-07-22 23:46-0400\n"
+"PO-Revision-Date: 2016-07-22 23:57-0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: formidable_copy_action.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2;t\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: class/FormidableCopyAction.php:20 formidable_copy_action.php:52
+msgid "Formidable Copy Action"
+msgstr "Formidable Copy Action"
+
+#: class/FormidableCopyAction.php:46
+msgid "Put data to destination form "
+msgstr "Establecer los datos del formulario de destino "
+
+#: class/FormidableCopyAction.php:51
+msgid " Form destination: "
+msgstr "Destino: "
+
+#: class/FormidableCopyAction.php:54
+msgid "Select"
+msgstr "Seleccionar"
+
+#: class/FormidableCopyAction.php:78
+msgid "The form need to published."
+msgstr "El formulario necesita estar publicado"
+
+#: class/FormidableCopyActionAdmin.php:58
+msgid "Settings"
+msgstr "Ajustes"
+
+#: class/FormidableCopyActionSettings.php:23
+msgid "Licence Data"
+msgstr "Datos de licencia"
+
+#: class/FormidableCopyActionSettings.php:26
+msgid "Order Key"
+msgstr "Llave"
+
+#: class/FormidableCopyActionSettings.php:27
+msgid "Key status: "
+msgstr "Estado de la llave:"
+
+#: class/FormidableCopyActionSettings.php:31
+msgid "Order key send to you with order confirmation, to get updates."
+msgstr ""
+"Llave que se le envió con la confirmación de la orden, para obtener las "
+"actualizaciones"
+
+#: class/GManagerFactory.php:48 class/GManagerFactory.php:85
+#: class/GManagerFactory.php:132 class/GManagerFactory.php:187
+msgid "Error Handling server connections"
+msgstr "Error manejando la conexión con el servidor"
+
+#: class/GManagerFactory.php:79
+msgid "Licence susses deactivated"
+msgstr "Licencia desactivada correctamente"
+
+#: class/GManagerFactory.php:82
+msgid "Licence deactivated request error"
+msgstr "Error desactivando la licencia"
+
+#: class/GManagerFactory.php:89 class/GManagerFactory.php:191
+msgid "Not licence key detected. Please set."
+msgstr "No se detecto ninguna llave de licencia. Establezca alguna."
+
+#: class/GManagerFactory.php:92
+msgid "Licence already deactivated"
+msgstr "La licencia ya fue desactivada"
+
+#: class/GManagerFactory.php:122
+msgid "Licence susses activated"
+msgstr "Licencia activada satisfactoriamente"
+
+#: class/GManagerFactory.php:126
+msgid "Licence activating error"
+msgstr "Error activando la licencia"
+
+#: class/GManagerFactory.php:129
+msgid "Licence activation request error"
+msgstr "Error en la petición de activación de la licencia"
+
+#: class/GManagerFactory.php:136
+msgid "Licence already activated"
+msgstr "La licencia ya se activo"
+
+#: class/GManagerFactory.php:165
+msgid "Licence is active"
+msgstr "Licencia activa"
+
+#: class/GManagerFactory.php:169
+msgid "Licence is inactive"
+msgstr "La licencia es inactiva"
+
+#: class/GManagerFactory.php:176
+msgid "Invalid license key"
+msgstr "Llave de licencia invalida"
+
+#: class/GManagerFactory.php:180
+msgid "Invalid provided data"
+msgstr "Datos inválidos"
+
+#: class/GManagerFactory.php:184
+msgid "Licence status request unsuccessfully"
+msgstr "Error en la petición de estado de la licencia"
+
+#: formidable_copy_action.php:51
+msgid "This plugins required Formidable to run!"
+msgstr "Este Plugin necesita de Formidable para funcionar!"
+
+#: plugin-update-checker/github-checker.php:119
+msgid "There is no changelog available."
+msgstr "No hay lista de cambios disponible"
+
+#: plugin-update-checker/plugin-update-checker.php:763
+msgid "Check for updates"
+msgstr "Comprobar actualizaciones"
+
+#: plugin-update-checker/plugin-update-checker.php:807
+msgid "This plugin is up to date."
+msgstr "Esta al día."
+
+#: plugin-update-checker/plugin-update-checker.php:809
+msgid "A new version of this plugin is available."
+msgstr "Hay una versión nueva disponible."
+
+#: plugin-update-checker/plugin-update-checker.php:811
+#, php-format
+msgid "Unknown update checker status \"%s\""
+msgstr "Estado de la actualización desconocido \"%s\""
+
+#. Plugin Name of the plugin/theme
+msgid "Formidable copy action"
+msgstr "Formidable copy action"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/gfirem/formidable_copy_action"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Action to add data to other form. Some possible uses is like log to send "
+"feed data to other form"
+msgstr ""
+"Acción para adicionar datos a otro formulario. Algunos posibles escenarios "
+"es para mantener un histórico en otro formulario"
+
+#. Author of the plugin/theme
+msgid "Guillermo Figueroa Mesa"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://wwww.gfirem.com"
+msgstr ""
