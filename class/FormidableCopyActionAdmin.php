@@ -135,12 +135,13 @@ class FormidableCopyActionAdmin {
 	/**
 	 * Get formatted body of table with fields of forms
 	 *
+	 * @param $instanceNumber
 	 * @param $formId
 	 * @param $formData
 	 *
 	 * @return string
 	 */
-	public static function getFormFields( $formId, $formData ) {
+	public static function getFormFields( $instanceNumber, $formId, $formData ) {
 		global $frm_field;
 		$fields = $frm_field->getAll( array( 'fi.form_id' => $formId ), 'field_order' );
 
@@ -172,7 +173,7 @@ class FormidableCopyActionAdmin {
 						<label for="' . $field['field_key'] . '"> <b>' . $field['name'] . '</b></label>
 					</th>
 					<td>
-						<textarea id="' . $field['field_key'] . '" name="' . $field['id'] . '" class="large-text ' . $class . ' frm_formidable_copy">' . $value . '</textarea>
+						<textarea id="' . $field['field_key'] . '" name="' . $field['id'] . '" class="frm_formidable_copy_field_' . $instanceNumber . ' ' . $class . ' large-text">' . $value . '</textarea>
 					</td>
 				</tr>
 				<tr>
@@ -198,7 +199,7 @@ class FormidableCopyActionAdmin {
 			die();
 		}
 
-		echo self::getFormFields( $_POST['form_destination_id'], null );
+		echo self::getFormFields($_POST['form-instance-number'], $_POST['form_destination_id'], null );
 
 		die();
 	}
@@ -226,32 +227,13 @@ class FormidableCopyActionAdmin {
 	}
 
 	/**
-	 * Replace field in destination string
-	 *
-	 * @param $entry
-	 * @param $string
-	 *
-	 * @return mixed
-	 */
-	private function processData( $entry, $string ) {
-		$entry = (array) $entry;
-		preg_match_all( "/\[(\d*)\]/", $string, $matches, PREG_SET_ORDER );
-		if ( $matches != null ) {
-			foreach ( $matches as $match ) {
-				$string = preg_replace( "/\[" . $match[1] . "\]/", $entry['metas'][ $match[1] ], $string );
-			}
-		}
-
-		return $string;
-	}
-
-	/**
 	 * Process source action to create entry in destination form
 	 *
 	 * @param $action
 	 * @param $entry
 	 */
 	private function processAction( $action, $entry ) {
+		$entry          = (array) $entry;
 		$destination_id = $action->post_content['form_destination_id'];
 		if ( empty( $destination_id ) ) {
 			return;
@@ -265,8 +247,11 @@ class FormidableCopyActionAdmin {
 		$jsonData = json_decode( $destination_data );
 		if ( $jsonData != null ) {
 			foreach ( $jsonData as $val ) {
-				$val                   = (array) $val;
-				$metas[ $val['name'] ] = $this->processData( $entry, $val['value'] );
+				$val        = (array) $val;
+				$shortCodes = FrmFieldsHelper::get_shortcodes( $val['value'], $entry['form_id'] );
+				$content    = apply_filters( 'frm_replace_content_shortcodes', $val['value'], FrmEntry::getOne( $entry['id'] ), $shortCodes );
+				FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $content );
+				$metas[ $val['name'] ] = do_shortcode( $content );
 			}
 		}
 

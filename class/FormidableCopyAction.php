@@ -36,11 +36,11 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( $form->status === 'published' ) {
 			?>
 			<style>
-				#pda-loading {
+				#pda-loading-<?= $this->number ?> {
 					display: none;
 				}
 			</style>
-			<input type="hidden" name="form-nonce" id="form-nonce" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
+			<input type="hidden" name="form-nonce-<?= $this->number ?>" id="form-nonce-<?= $this->number ?>" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
 			<input type="hidden" value="<?= esc_attr( $form_action->post_content['form_id'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_id' ) ?>">
 			<input type="hidden" value="<?= esc_attr( $form_action->post_content['form_destination_data'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_destination_data' ) ?>">
 			<h3 id="copy_section"><?= FormidableCopyActionManager::t( 'Put data to destination form ' ) ?></h3>
@@ -51,8 +51,8 @@ class FormidableCopyAction extends FrmFormAction {
 					<th><label> <b><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></b></label></th>
 					<td>
 						<?php FrmFormsHelper::forms_dropdown( $action_control->get_field_name( 'form_destination_id' ), $form_action->post_content['form_destination_id'], array( 'inc_children' => 'include' ) ); ?>
-						<input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn" name="copy-select-form-btn">
-						<img id="pda-loading" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
+						<input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn-<?= $this->number ?>" name="copy-select-form-btn">
+						<img id="pda-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
 					</td>
 				</tr>
 				<tr>
@@ -62,17 +62,13 @@ class FormidableCopyAction extends FrmFormAction {
 				</tr>
 				</tbody>
 			</table>
-			<table class="form-table frm-no-margin" id="copy-table-content">
+			<table class="form-table frm-no-margin" id="copy-table-content-<?= $this->number ?>">
 				<?php
 				if ( isset( $form_action->post_content['form_destination_id'] ) && ! empty( $form_action->post_content['form_destination_id'] ) ) {
-					echo FormidableCopyActionAdmin::getFormFields( $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_data'] );
+					echo FormidableCopyActionAdmin::getFormFields($this->number, $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_data'] );
 				}
 				?>
 			</table>
-			<script type='text/javascript' src='<?= site_url(); ?>/wp-content/plugins/formidable_copy_action/js/tinymce/tinymce.min.js'></script>
-			<script type='text/javascript' src='<?= site_url(); ?>/wp-includes/js/jquery/jquery.form.min.js'></script>
-
-
 		<?php
 		} else {
 			echo FormidableCopyActionManager::t( 'The form need to published.' );
@@ -80,57 +76,80 @@ class FormidableCopyAction extends FrmFormAction {
 		$language = substr( get_bloginfo( 'language' ), 0, 2 );
 		?>
 		<script>
+			function myToggleAllowedShortCodes(id) {
+				if (typeof(id) == 'undefined') {
+					id = '';
+				}
+				var c = id;
+
+				if (id !== '') {
+					var $ele = jQuery(document.getElementById(id));
+					if ($ele.attr('class') && id !== 'wpbody-content' && id !== 'content' && id !== 'dyncontent' && id != 'success_msg') {
+						var d = $ele.attr('class').split(' ')[0];
+						if (d == 'frm_long_input' || typeof d == 'undefined') {
+							d = '';
+						} else {
+							id = jQuery.trim(d);
+						}
+						c = c + ' ' + d;
+					}
+				}
+				jQuery('#frm-insert-fields-box,#frm-conditionals,#frm-adv-info-tab,#frm-html-tags,#frm-layout-classes,#frm-dynamic-values').removeClass().addClass('tabs-panel ' + c);
+
+				if (id == 'frm_formidable_copy_field_<?= $this->number ?>') {
+					jQuery('.frm_code_list a').removeClass('frm_noallow').addClass('frm_allow');
+					jQuery('.frm_code_list a.hide_' + id).addClass('frm_noallow').removeClass('frm_allow');
+				} else {
+					jQuery('.frm_code_list a').addClass('frm_noallow').removeClass('frm_allow');
+				}
+			}
+
+			jQuery(document).on('focusin click', 'form input, form textarea, #wpcontent', function (e) {
+				e.stopPropagation();
+				if (jQuery(this).is(':not(:submit, input[type=button])') && jQuery(this).hasClass("frm_formidable_copy_field_<?= $this->number ?>")) {
+					var id = jQuery(this).attr('id');
+					myToggleAllowedShortCodes(id);
+				}
+			});
+
 			jQuery(document).ready(function ($) {
 				var ajax_url = "<?= admin_url('admin-ajax.php'); ?>";
-				var selectFormBtn = $("#copy-select-form-btn");
-				var security = $("#form-nonce").attr('form-copy-security');
+				jQuery(".frm_single_formidable_copy_settings").each(function () {
+					var actionId = $(this).attr("data-actionkey");
 
-				jQuery(".frm_form_settings").submit(function(e){
-					tinymce.triggerSave();
-					var json = JSON.stringify($( "textarea.frm_formidable_copy" ).serializeArray());
-					$("[name^='frm_formidable_copy_action'][name$='[post_content][form_destination_data]']").val(json);
-				});
+					jQuery(".frm_form_settings").submit(function (e) {
+						tinymce.triggerSave();
+						var json = JSON.stringify($("textarea.frm_formidable_copy_field_"+ actionId).serializeArray());
+						$("[name='frm_formidable_copy_action[" + actionId + "][post_content][form_destination_data]']").val(json);
+					});
 
-				selectFormBtn.click(function () {
-					$("#pda-loading").show();
-					$.post("/wp-admin/admin-ajax.php", {
-						'action': 'get_form_fields',
-						'form_destination_id': $("[name^='frm_formidable_copy_action'][name$='[post_content][form_destination_id]']").val(),
-						'form-copy-security': security
-					}, function (data) {
-						if (data) {
-							$("#copy-table-content").empty();
-							$("#copy-table-content").append(data);
-							loadTinyMce();
-						}
-						else {
+					$("#copy-select-form-btn-" + actionId).click(function () {
+						$("#pda-loading-" + actionId).show();
+						$.post("/wp-admin/admin-ajax.php", {
+							'action': 'get_form_fields',
+							'form_destination_id': $("[name='frm_formidable_copy_action[" + actionId + "][post_content][form_destination_id]']").val(),
+							'form-copy-security': $("#form-nonce-" + actionId).attr('form-copy-security'),
+							'form-instance-number': <?= $this->number ?>
+						}, function (data) {
+							if (data) {
+								$("#copy-table-content-" + actionId).empty();
+								$("#copy-table-content-" + actionId).append(data);
+							}
+							else {
+								alert("Error, contacte al administrador!");
+							}
+
+						}).fail(function () {
 							alert("Error, contacte al administrador!");
-						}
-
-					}).fail(function () {
-						alert("Error, contacte al administrador!");
-					}).always(function () {
-						$("#pda-loading").hide();
+						}).always(function () {
+							$("#pda-loading-" + actionId).hide();
+						});
 					});
 				});
 			});
 
-			function loadTinyMce() {
-				tinymce.init({
-					selector: '.copy_editor',
-					automatic_uploads: true,
-					language: '<?= $language ?>',
-					relative_urls: false,
-					remove_script_host: false,
-					force_p_newlines: false,
-					forced_root_block: '',
-					toolbar: "undo redo | styleselect | bold italic | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | code",
-					plugins: 'code textcolor colorpicker'
-				});
-			}
-
 			<?php if(isset($form_action->post_content['form_destination_id']) && !empty($form_action->post_content['form_destination_id'])){ ?>
-			loadTinyMce();
+
 			<?php }	?>
 		</script>
 	<?php
