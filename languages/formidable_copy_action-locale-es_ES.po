@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Formidable copy action\n"
-"POT-Creation-Date: 2016-07-22 23:46-0400\n"
-"PO-Revision-Date: 2016-07-22 23:57-0400\n"
+"POT-Creation-Date: 2016-07-26 12:29-0400\n"
+"PO-Revision-Date: 2016-07-26 12:30-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -36,7 +36,7 @@ msgstr "Destino: "
 msgid "Select"
 msgstr "Seleccionar"
 
-#: class/FormidableCopyAction.php:78
+#: class/FormidableCopyAction.php:74
 msgid "The form need to published."
 msgstr "El formulario necesita estar publicado"
 
@@ -150,7 +150,7 @@ msgstr "Formidable copy action"
 
 #. Plugin URI of the plugin/theme
 msgid "https://github.com/gfirem/formidable_copy_action"
-msgstr ""
+msgstr "https://github.com/gfirem/formidable_copy_action"
 
 #. Description of the plugin/theme
 msgid ""
@@ -162,8 +162,8 @@ msgstr ""
 
 #. Author of the plugin/theme
 msgid "Guillermo Figueroa Mesa"
-msgstr ""
+msgstr "Guillermo Figueroa Mesa"
 
 #. Author URI of the plugin/theme
 msgid "http://wwww.gfirem.com"
-msgstr ""
+msgstr "http://wwww.gfirem.com"
