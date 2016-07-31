@@ -44,10 +44,10 @@ class FormidableCopyActionSettings {
 	}
 
 	public static function process_form() {
-		if ( isset( $_POST[ FormidablePatternFieldManager::getShort() . '_key' ] ) && ! empty( $_POST[ FormidablePatternFieldManager::getShort() . '_key' ] ) ) {
+		if ( isset( $_POST[ FormidableCopyActionManager::getShort() . '_key' ] ) && ! empty( $_POST[ FormidableCopyActionManager::getShort() . '_key' ] ) ) {
 			$gManager = GManagerFactory::buildManager('FormidableCopyActionManager', 'formidable_copy_action', FormidableCopyActionManager::getShort());
-			$gManager->activate($_POST[ FormidablePatternFieldManager::getShort() . '_key' ]);
-			update_option( FormidableCopyActionManager::getShort() . 'licence_key', $_POST[ FormidablePatternFieldManager::getShort() . '_key' ] );
+			$gManager->activate($_POST[ FormidableCopyActionManager::getShort() . '_key' ]);
+			update_option( FormidableCopyActionManager::getShort() . 'licence_key', $_POST[ FormidableCopyActionManager::getShort() . '_key' ] );
 		}
 		self::display_form();
 	}
