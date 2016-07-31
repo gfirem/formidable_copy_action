@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Formidable copy action\n"
 "POT-Creation-Date: 2016-07-26 12:29-0400\n"
-"PO-Revision-Date: 2016-07-26 12:30-0400\n"
+"PO-Revision-Date: 2016-07-29 22:38-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -60,7 +60,7 @@ msgstr "Estado de la llave:"
 msgid "Order key send to you with order confirmation, to get updates."
 msgstr ""
 "Llave que se le envió con la confirmación de la orden, para obtener las "
-"actualizaciones"
+"actualizaciones."
 
 #: class/GManagerFactory.php:48 class/GManagerFactory.php:85
 #: class/GManagerFactory.php:132 class/GManagerFactory.php:187
