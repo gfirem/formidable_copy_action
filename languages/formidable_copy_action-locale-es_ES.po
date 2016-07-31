@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Formidable copy action\n"
-"POT-Creation-Date: 2016-07-26 12:29-0400\n"
-"PO-Revision-Date: 2016-07-29 22:38-0400\n"
+"POT-Creation-Date: 2016-07-30 22:48-0400\n"
+"PO-Revision-Date: 2016-07-30 22:49-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -45,22 +45,26 @@ msgid "Settings"
 msgstr "Ajustes"
 
 #: class/FormidableCopyActionSettings.php:23
-msgid "Licence Data"
-msgstr "Datos de licencia"
+msgid "Licence Data for Copy Action"
+msgstr "Datos de la licencia para la Acción Copiar"
 
 #: class/FormidableCopyActionSettings.php:26
-msgid "Order Key"
-msgstr "Llave"
+msgid "Version: "
+msgstr "Versión: "
 
-#: class/FormidableCopyActionSettings.php:27
-msgid "Key status: "
-msgstr "Estado de la llave:"
+#: class/FormidableCopyActionSettings.php:33
+msgid "Order Key: "
+msgstr "Llave: "
 
-#: class/FormidableCopyActionSettings.php:31
+#: class/FormidableCopyActionSettings.php:34
 msgid "Order key send to you with order confirmation, to get updates."
 msgstr ""
 "Llave que se le envió con la confirmación de la orden, para obtener las "
-"actualizaciones."
+"actualizaciones"
+
+#: class/FormidableCopyActionSettings.php:39
+msgid "Key status: "
+msgstr "Estado de la llave:"
 
 #: class/GManagerFactory.php:48 class/GManagerFactory.php:85
 #: class/GManagerFactory.php:132 class/GManagerFactory.php:187
@@ -167,3 +171,9 @@ msgstr "Guillermo Figueroa Mesa"
 #. Author URI of the plugin/theme
 msgid "http://wwww.gfirem.com"
 msgstr "http://wwww.gfirem.com"
+
+#~ msgid "Licence Data"
+#~ msgstr "Datos de licencia"
+
+#~ msgid "Order Key"
+#~ msgstr "Llave"

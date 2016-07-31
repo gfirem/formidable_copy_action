@@ -125,7 +125,7 @@ class FormidableCopyAction extends FrmFormAction {
 
 					$("#copy-select-form-btn-" + actionId).click(function () {
 						$("#pda-loading-" + actionId).show();
-						$.post("/wp-admin/admin-ajax.php", {
+						$.post("<?= admin_url('admin-ajax.php'); ?>", {
 							'action': 'get_form_fields',
 							'form_destination_id': $("[name='frm_formidable_copy_action[" + actionId + "][post_content][form_destination_id]']").val(),
 							'form-copy-security': $("#form-nonce-" + actionId).attr('form-copy-security'),

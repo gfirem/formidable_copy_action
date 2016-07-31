@@ -14,12 +14,13 @@ class FormidableCopyActionManager {
 	protected $plugin_slug;
 	private static $plugin_short = 'FormidableCopyAction';
 
-	protected $version;
+	protected static $version;
 
 	public function __construct() {
 
 		$this->plugin_slug = 'formidable-copy-action';
-		$this->version     = '1.0';
+
+		self::$version     = '1.02';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -28,6 +29,10 @@ class FormidableCopyActionManager {
 
 	static function getShort() {
 		return self::$plugin_short;
+	}
+
+	static function getVersion() {
+		return self::$version;
 	}
 
 	private function load_dependencies() {
@@ -65,7 +70,7 @@ class FormidableCopyActionManager {
 	}
 
 	public function get_version() {
-		return $this->version;
+		return self::$version;
 	}
 
 	/**
