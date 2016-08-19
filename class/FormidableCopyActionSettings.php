@@ -16,9 +16,9 @@ class FormidableCopyActionSettings {
 	/**
 	 * @internal var gManager GManager_1_0
 	 */
-	public static function display_form( ) {
-		$gManager = GManagerFactory::buildManager('FormidableCopyActionManager', 'formidable_copy_action', FormidableCopyActionManager::getShort());
-		$key  = get_option( FormidableCopyActionManager::getShort() . 'licence_key' );
+	public static function display_form() {
+		$gManager = GManagerFactory::buildManager( 'FormidableCopyActionManager', 'formidable_copy_action', FormidableCopyActionManager::getShort() );
+		$key      = get_option( FormidableCopyActionManager::getShort() . 'licence_key' );
 		?>
 		<h3 class="frm_first_h3"><?= FormidableCopyActionManager::t( "Licence Data for Copy Action" ) ?></h3>
 		<table class="form-table">
@@ -45,8 +45,8 @@ class FormidableCopyActionSettings {
 
 	public static function process_form() {
 		if ( isset( $_POST[ FormidableCopyActionManager::getShort() . '_key' ] ) && ! empty( $_POST[ FormidableCopyActionManager::getShort() . '_key' ] ) ) {
-			$gManager = GManagerFactory::buildManager('FormidableCopyActionManager', 'formidable_copy_action', FormidableCopyActionManager::getShort());
-			$gManager->activate($_POST[ FormidableCopyActionManager::getShort() . '_key' ]);
+			$gManager = GManagerFactory::buildManager( 'FormidableCopyActionManager', 'formidable_copy_action', FormidableCopyActionManager::getShort() );
+			$gManager->activate( $_POST[ FormidableCopyActionManager::getShort() . '_key' ] );
 			update_option( FormidableCopyActionManager::getShort() . 'licence_key', $_POST[ FormidableCopyActionManager::getShort() . '_key' ] );
 		}
 		self::display_form();

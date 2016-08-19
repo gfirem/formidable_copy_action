@@ -23,7 +23,7 @@ class FormidableCopyActionLoader {
 	 * @param $priority
 	 * @param $params
 	 */
-	public function add_action( $hook, $component, $callback, $priority = 10, $params = 1) {
+	public function add_action( $hook, $component, $callback, $priority = 10, $params = 1 ) {
 		$this->actions = $this->add( $this->actions, $hook, $component, $callback, $priority, $params );
 	}
 
@@ -47,7 +47,7 @@ class FormidableCopyActionLoader {
 			'component' => $component,
 			'callback'  => $callback,
 			'priority'  => $priority,
-			'params'  => $params,
+			'params'    => $params,
 		);
 
 		return $hooks;

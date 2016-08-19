@@ -14,7 +14,7 @@ class FormidableCopyAction extends FrmFormAction {
 			'limit'    => 99,
 			'active'   => true,
 			'priority' => 50,
-			'event'    => [ 'create', 'update' ],
+			'event'    => array( 'create', 'update' ),
 		);
 
 		$this->FrmFormAction( 'formidable_copy', FormidableCopyActionManager::t( 'Formidable Copy Action' ), $action_ops );
@@ -36,7 +36,7 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( $form->status === 'published' ) {
 			?>
 			<style>
-				#pda-loading-<?= $this->number ?> {
+				<?= "#pda-loading-".$this->number ?> {
 					display: none;
 				}
 			</style>
@@ -65,7 +65,7 @@ class FormidableCopyAction extends FrmFormAction {
 			<table class="form-table frm-no-margin" id="copy-table-content-<?= $this->number ?>">
 				<?php
 				if ( isset( $form_action->post_content['form_destination_id'] ) && ! empty( $form_action->post_content['form_destination_id'] ) ) {
-					echo FormidableCopyActionAdmin::getFormFields($this->number, $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_data'] );
+					echo FormidableCopyActionAdmin::getFormFields( $this->number, $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_data'] );
 				}
 				?>
 			</table>
@@ -119,7 +119,7 @@ class FormidableCopyAction extends FrmFormAction {
 
 					jQuery(".frm_form_settings").submit(function (e) {
 						tinymce.triggerSave();
-						var json = JSON.stringify($("textarea.frm_formidable_copy_field_"+ actionId).serializeArray());
+						var json = JSON.stringify($("textarea.frm_formidable_copy_field_" + actionId).serializeArray());
 						$("[name='frm_formidable_copy_action[" + actionId + "][post_content][form_destination_data]']").val(json);
 					});
 

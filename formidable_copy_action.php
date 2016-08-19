@@ -45,17 +45,17 @@ function FormidableCopyActionBootLoader() {
 }
 
 function checkRequiredFormidableCopyAction() {
-	if ( !class_exists( "FrmHooksController" ) ) {
+	if ( ! class_exists( "FrmHooksController" ) ) {
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 		wp_die(
 			FormidableCopyActionManager::t( 'This plugins required Formidable to run!' ),
 			FormidableCopyActionManager::t( 'Formidable Copy Action' ),
-			array('back_link'=> true)
+			array( 'back_link' => true )
 		);
 	}
 }
 
-register_activation_hook(__FILE__, "checkRequiredFormidableCopyAction");
+register_activation_hook( __FILE__, "checkRequiredFormidableCopyAction" );
 
 /**
  * Add translation files

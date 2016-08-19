@@ -199,7 +199,7 @@ class FormidableCopyActionAdmin {
 			die();
 		}
 
-		echo self::getFormFields($_POST['form-instance-number'], $_POST['form_destination_id'], null );
+		echo self::getFormFields( $_POST['form-instance-number'], $_POST['form_destination_id'], null );
 
 		die();
 	}
