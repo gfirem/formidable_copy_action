@@ -237,6 +237,7 @@ if ( ! class_exists( 'GManagerFactory', false ) ):
 		 *
 		 * @see GManager_1_0::__construct()
 		 *
+		 * @param $controller
 		 * @param $productId
 		 *
 		 * @param $short
