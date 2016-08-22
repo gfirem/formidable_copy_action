@@ -20,7 +20,7 @@ class FormidableCopyActionManager {
 
 		$this->plugin_slug = 'formidable-copy-action';
 
-		self::$version = '1.03';
+		self::$version = '1.04';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();

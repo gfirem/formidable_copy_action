@@ -118,7 +118,6 @@ class FormidableCopyAction extends FrmFormAction {
 					var actionId = $(this).attr("data-actionkey");
 
 					jQuery(".frm_form_settings").submit(function (e) {
-						tinymce.triggerSave();
 						var json = JSON.stringify($("textarea.frm_formidable_copy_field_" + actionId).serializeArray());
 						$("[name='frm_formidable_copy_action[" + actionId + "][post_content][form_destination_data]']").val(json);
 					});

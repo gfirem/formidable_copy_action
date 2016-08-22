@@ -110,7 +110,7 @@ if ( ! class_exists( 'GManager_1_0', false ) ):
 				$data = $this->genericGet( 'activate', $licence_key );
 
 				if ( is_wp_error( $data ) ) {
-					return $data->get_error_message();;
+					return $data->get_error_message();
 				}
 
 				$data_body = json_decode( $data['body'] );

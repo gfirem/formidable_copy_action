@@ -30,7 +30,7 @@ class FormidableCopyActionSettings {
 			</tr>
 			<tr class="form-field" valign="top">
 				<td width="150px">
-					<label for="key"><?= FormidableCopyActionManager::t( "Order Key: " ) ?></label>
+					<label for="<?= FormidableCopyActionManager::getShort() ?>_key"><?= FormidableCopyActionManager::t( "Order Key: " ) ?></label>
 					<span class="frm_help frm_icon_font frm_tooltip_icon" title="" data-original-title="<?= FormidableCopyActionManager::t( "Order key send to you with order confirmation, to get updates." ) ?>"></span>
 				</td>
 				<td><input type="text" name="<?= FormidableCopyActionManager::getShort() ?>_key" id="<?= FormidableCopyActionManager::getShort() ?>_key" value="<?= $key ?>"/></td>
