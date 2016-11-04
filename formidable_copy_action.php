@@ -3,7 +3,7 @@
  * Plugin Name:       Formidable copy action
  * Plugin URI:        https://github.com/gfirem/formidable_copy_action
  * Description:       Action to add data to other form. Some possible uses is like log to send feed data to other form
- * Version:           1.04
+ * Version:           1.05
  * Author:            Guillermo Figueroa Mesa
  * Author URI:        http://wwww.gfirem.com
  * Text Domain:       formidable_copy_action-locale

@@ -14,7 +14,7 @@ class FormidableCopyAction extends FrmFormAction {
 			'limit'    => 99,
 			'active'   => true,
 			'priority' => 50,
-			'event'    => array( 'create', 'update' ),
+			'event'    => array( 'create', 'update', 'import' ),
 		);
 
 		$this->FrmFormAction( 'formidable_copy', FormidableCopyActionManager::t( 'Formidable Copy Action' ), $action_ops );
@@ -33,11 +33,18 @@ class FormidableCopyAction extends FrmFormAction {
 		$form           = $args['form'];
 		$fields         = $args['values']['fields'];
 		$action_control = $this;
+
+		$allow_validation = "";
+		if ( $form_action->post_content['form_validate_data'] == "1" ) {
+			$allow_validation = "checked='checked'";
+		}
 		if ( $form->status === 'published' ) {
 			?>
 			<style>
-				<?= "#pda-loading-".$this->number ?> {
-					display: none;
+				<?= "#pda-loading-".$this->number ?>
+				{
+					display: none
+				;
 				}
 			</style>
 			<input type="hidden" name="form-nonce-<?= $this->number ?>" id="form-nonce-<?= $this->number ?>" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
@@ -47,6 +54,15 @@ class FormidableCopyAction extends FrmFormAction {
 			<hr/>
 			<table class="form-table frm-no-margin">
 				<tbody id="copy-table-body">
+				<tr>
+					<th>
+						<label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></b></label>
+						<span class="frm_help frm_icon_font frm_tooltip_icon" title="" data-original-title="<?= FormidableCopyActionManager::t( "If you check this, the action validate the entry before insert into the destination form." ) ?>"></span>
+					</th>
+					<td>
+						<input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
+					</td>
+				</tr>
 				<tr>
 					<th><label> <b><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></b></label></th>
 					<td>
@@ -162,6 +178,7 @@ class FormidableCopyAction extends FrmFormAction {
 			'form_id'               => $this->get_field_name( 'form_id' ),
 			'form_destination_id'   => '',
 			'form_destination_data' => '',
+			'form_validate_data'    => '',
 		);
 
 		if ( $this->form_id != null ) {

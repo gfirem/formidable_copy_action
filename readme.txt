@@ -3,7 +3,7 @@ Contributors: gfirem
 Tags: formidable, copy form, formidable action, formidable copy form, custom action
 Requires at least: 4.5.0
 Tested up to: 4.6
-Stable tag: 1.04
+Stable tag: 1.05
 License: Apache License 2.0
 
 Adiciona una accion que permite enviar datos a otro formulario. / Add action to send data to another form.
@@ -15,6 +15,10 @@ En:
 Add action to send data to another form.
 
 == Changelog ==
+= 1.05 =
+Adding options to enabled/disable validation in the form destination.
+Adding import trigger to the action.
+
 = 1.04 =
 jQuery fixing.
 

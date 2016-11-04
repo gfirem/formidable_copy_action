@@ -255,10 +255,21 @@ class FormidableCopyActionAdmin {
 			}
 		}
 
-		FrmEntry::create( array(
+		$data = array(
 			'form_id'     => $destination_id,
 			'frm_user_id' => get_current_user_id(),
+			'frm_submit_entry_' . $destination_id =>  wp_create_nonce('frm_submit_entry_nonce' ),
 			'item_meta'   => $metas,
-		) );
+		);
+
+		if ( ! empty( $action->post_content['form_validate_data'] ) && $action->post_content['form_validate_data'] == "1" ) {
+			$errors = FrmEntryValidate::validate( $data );
+
+			if ( empty( $errors ) ) {
+				FrmEntry::create( $data );
+			}
+		} else {
+			FrmEntry::create( $data );
+		}
 	}
 }
