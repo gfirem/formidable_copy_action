@@ -256,10 +256,10 @@ class FormidableCopyActionAdmin {
 		}
 
 		$data = array(
-			'form_id'     => $destination_id,
-			'frm_user_id' => get_current_user_id(),
-			'frm_submit_entry_' . $destination_id =>  wp_create_nonce('frm_submit_entry_nonce' ),
-			'item_meta'   => $metas,
+			'form_id'                             => $destination_id,
+			'frm_user_id'                         => get_current_user_id(),
+			'frm_submit_entry_' . $destination_id => wp_create_nonce( 'frm_submit_entry_nonce' ),
+			'item_meta'                           => $metas,
 		);
 
 		if ( ! empty( $action->post_content['form_validate_data'] ) && $action->post_content['form_validate_data'] == "1" ) {
@@ -267,6 +267,17 @@ class FormidableCopyActionAdmin {
 
 			if ( empty( $errors ) ) {
 				FrmEntry::create( $data );
+			} else {
+				$error_str = "";
+				foreach ( $errors as $key => $value ) {
+					$error_str .= $key . " : " . $value . "<br/>";
+				}
+				FormidableCopyActionLogs::log( array(
+					'action'         => "Create",
+					'object_type'    => FormidableCopyActionManager::getShort(),
+					'object_subtype' => "validation_error",
+					'object_name'    => $error_str,
+				) );
 			}
 		} else {
 			FrmEntry::create( $data );

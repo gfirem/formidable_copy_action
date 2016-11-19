@@ -20,7 +20,7 @@ class FormidableCopyActionManager {
 
 		$this->plugin_slug = 'formidable-copy-action';
 
-		self::$version = '1.05';
+		self::$version = '1.06';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -38,9 +38,11 @@ class FormidableCopyActionManager {
 	private function load_dependencies() {
 
 		require_once plugin_dir_path( __FILE__ ) . 'FormidableCopyActionLoader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class/FormidableCopyActionLogs.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class/FormidableCopyActionAdmin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class/FormidableCopyActionSettings.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class/GManagerFactory.php';
+
 
 		$this->loader = new FormidableCopyActionLoader();
 	}
@@ -48,6 +50,7 @@ class FormidableCopyActionManager {
 	private function define_admin_hooks() {
 		$gManager = GManagerFactory::buildManager( 'FormidableCopyActionManager', 'formidable_copy_action', self::getShort() );
 		$admin    = new FormidableCopyActionAdmin( $this->get_version(), $this->plugin_slug, $gManager );
+		$logs = new FormidableCopyActionLogs();
 
 		$this->loader->add_action( 'admin_head', $admin, 'admin_' . self::getShort() . '_style' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_' . self::getShort() . '_style' );
