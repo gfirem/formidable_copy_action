@@ -16,7 +16,7 @@ Add action to send data to another form.
 
 == Changelog ==
 = 1.06 =
-Adding log into the plugins Aryo Log to see the validation output.
+Adding log into the plugin Aryo Log to see the validation output.
 
 = 1.05 =
 Adding options to enabled/disable validation in the form destination.
