@@ -188,6 +188,37 @@ class FormidableCopyActionAdmin {
 	}
 
 	/**
+	 * Get field to select the primary key
+	 *
+	 * @param $formId
+	 * @param $selected_field_id
+	 *
+	 * @return string
+	 *
+	 */
+	public static function getUpdateFields( $formId, $selected_field_id = "-1" ) {
+		$fields = FrmField::get_all_for_form( $formId );
+		if ( empty( $selected_field_id ) || $selected_field_id == "-1" ) {
+			$result = '<option value="-1" selected="selected" ></option>';
+		} else {
+			$result = '<option value="-1"></option>';
+		}
+		foreach ( $fields as $field ) {
+			$field            = (array) $field;
+			$selected_text    = '';
+			$unusedFieldsType = array( 'divider', 'end_divider', 'file', 'captcha' );
+			if ( ! in_array( $field['type'], $unusedFieldsType ) ) {
+				if ( $field['id'] == $selected_field_id ) {
+					$selected_text = 'selected="selected"';
+				}
+				$result .= '<option value="' . $field['id'] . '" ' . $selected_text . ' >' . $field['name'] . '</option>';
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Ajax response to get forms fields
 	 */
 	public function ajaxFormidableCopyActionGetFormFields() {
@@ -200,6 +231,23 @@ class FormidableCopyActionAdmin {
 		}
 
 		echo self::getFormFields( $_POST['form-instance-number'], $_POST['form_destination_id'], null );
+
+		die();
+	}
+
+	/**
+	 * Ajax response to get forms fields
+	 */
+	public function ajaxFormidableCopyActionGetUpdateFields() {
+		if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['action'] ) || base64_decode( $_POST['form-copy-security'] ) != $_POST['action'] ) {
+			die();
+		}
+
+		echo self::getUpdateFields( $_POST['form_destination_id'] );
 
 		die();
 	}
@@ -262,12 +310,51 @@ class FormidableCopyActionAdmin {
 			'item_meta'                           => $metas,
 		);
 
-		if ( ! empty( $action->post_content['form_validate_data'] ) && $action->post_content['form_validate_data'] == "1" ) {
-			$errors = FrmEntryValidate::validate( $data );
+		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1"
+		     && ! empty( $action->post_content['form_destination_primary_key'] )
+		) {
+			$search       = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
+			$result       = FrmEntryMeta::search_entry_metas( $search, $action->post_content['form_destination_primary_key'], "LIKE" );
+			$primary_data = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
+			unset( $data["item_meta"][ $action->post_content['form_destination_primary_key'] ] );
+
+			$errors = $this->validate_entries( $action, $data );
+
+			if ( empty( $errors ) ) {
+				$data["item_meta"][ $action->post_content['form_destination_primary_key'] ] = $primary_data;
+				if ( ! empty( $result ) && is_array( $result ) ) {
+					foreach ( $result as $entry_id ) {
+						FrmEntryMeta::update_entry_metas( $entry_id, $data["item_meta"] );
+					}
+				} else {
+					FrmEntry::create( $data );
+				}
+			}
+		} else {
+			$errors = $this->validate_entries( $action, $data );
 
 			if ( empty( $errors ) ) {
 				FrmEntry::create( $data );
-			} else {
+			}
+		}
+
+
+	}
+
+	/**
+	 * Validate the entry if necessary
+	 *
+	 * @param $action
+	 * @param $data
+	 * @param bool $exclude
+	 *
+	 * @return array|mixed|void
+	 */
+	private function validate_entries( $action, $data, $exclude = false ) {
+		$errors = array();
+		if ( ! empty( $action->post_content['form_validate_data'] ) && $action->post_content['form_validate_data'] == "1" ) {
+			$errors = FrmEntryValidate::validate( $data, $exclude );
+			if ( ! empty( $errors ) ) {
 				$error_str = "";
 				foreach ( $errors as $key => $value ) {
 					$error_str .= $key . " : " . $value . "<br/>";
@@ -279,8 +366,8 @@ class FormidableCopyActionAdmin {
 					'object_name'    => $error_str,
 				) );
 			}
-		} else {
-			FrmEntry::create( $data );
 		}
+
+		return $errors;
 	}
 }

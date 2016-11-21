@@ -20,7 +20,7 @@ class FormidableCopyActionManager {
 
 		$this->plugin_slug = 'formidable-copy-action';
 
-		self::$version = '1.06';
+		self::$version = '1.10';
 
 		$this->load_dependencies();
 		$this->define_admin_hooks();
@@ -54,8 +54,12 @@ class FormidableCopyActionManager {
 
 		$this->loader->add_action( 'admin_head', $admin, 'admin_' . self::getShort() . '_style' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_' . self::getShort() . '_style' );
+		//Get field for the table result
 		$this->loader->add_action( 'wp_ajax_get_form_fields', $admin, 'ajax' . self::getShort() . 'GetFormFields' );
 		$this->loader->add_action( 'wp_ajax_nopriv_get_form_fields', $admin, 'ajax' . self::getShort() . 'GetFormFields' );
+		//Get the field for the update option
+		$this->loader->add_action( 'wp_ajax_get_form_update_fields', $admin, 'ajax' . self::getShort() . 'GetUpdateFields' );
+		$this->loader->add_action( 'wp_ajax_nopriv_get_form_update_fields', $admin, 'ajax' . self::getShort() . 'GetUpdateFields' );
 
 		$this->loader->add_action( 'frm_registered_form_actions', $admin, 'add' . self::getShort() );
 		$this->loader->add_action( 'frm_trigger_formidable_copy_create_action', $admin, 'on' . self::getShort() . 'Create', 10, 3 );

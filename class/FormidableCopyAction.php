@@ -38,14 +38,19 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( $form_action->post_content['form_validate_data'] == "1" ) {
 			$allow_validation = "checked='checked'";
 		}
+		$allow_update = "";
+		if ( ! empty( $form_action->post_content['form_destination_primary_enabled'] ) && $form_action->post_content['form_destination_primary_enabled'] == '1' ) {
+			$show_primary_key = "";
+			$allow_update     = "checked='checked'";
+		} else {
+			$show_primary_key = "style='display:none;'";
+		}
+
 		if ( $form->status === 'published' ) {
 			?>
 			<style>
-				<?= "#pda-loading-".$this->number ?>
-				{
-					display: none
-				;
-				}
+				<?php echo "#pda-loading-".$this->number."{ display: none; }"; ?>
+				<?php echo "#primary-loading-".$this->number."{ display: none; }"; ?>
 			</style>
 			<input type="hidden" name="form-nonce-<?= $this->number ?>" id="form-nonce-<?= $this->number ?>" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
 			<input type="hidden" value="<?= esc_attr( $form_action->post_content['form_id'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_id' ) ?>">
@@ -57,10 +62,10 @@ class FormidableCopyAction extends FrmFormAction {
 				<tr>
 					<th>
 						<label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></b></label>
-						<span class="frm_help frm_icon_font frm_tooltip_icon" title="" data-original-title="<?= FormidableCopyActionManager::t( "If you check this, the action validate the entry before insert into the destination form." ) ?>"></span>
 					</th>
 					<td>
 						<input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
+						<?= FormidableCopyActionManager::t( "If you check this, the action validate the entry values before insert into the destination form." ) ?>
 					</td>
 				</tr>
 				<tr>
@@ -69,6 +74,28 @@ class FormidableCopyAction extends FrmFormAction {
 						<?php FrmFormsHelper::forms_dropdown( $action_control->get_field_name( 'form_destination_id' ), $form_action->post_content['form_destination_id'], array( 'inc_children' => 'include' ) ); ?>
 						<input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn-<?= $this->number ?>" name="copy-select-form-btn">
 						<img id="pda-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Update destination: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" class="fac_allow_primary_update" <?= $allow_update ?> action-id="<?php echo $this->number; ?>" form-copy-security="<?= base64_encode( 'get_form_update_fields' ); ?>" target_form="<?php echo $form_action->post_content['form_destination_id'] ?>" target="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" name="<?php echo $action_control->get_field_name( 'form_destination_primary_enabled' ) ?>" id="allow_update_<?= $this->number ?>" value="1"/>
+						<?= FormidableCopyActionManager::t( "If you check this, the action update the entry instead of create if the primary field selected exist in the destination." ) ?>
+					</td>
+				</tr>
+				<tr <?php echo "$show_primary_key"; ?>>
+					<th><label> <b><?= FormidableCopyActionManager::t( ' Primary Field: ' ); ?></b></label></th>
+					<td>
+						<select name="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" id="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>">
+							<?php
+							if ( ! empty( $form_action->post_content['form_destination_id'] ) ) {
+								echo FormidableCopyActionAdmin::getUpdateFields( $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_primary_key'] );
+							}
+							?>
+						</select>
+						<img id="primary-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
 					</td>
 				</tr>
 				<tr>
@@ -128,8 +155,51 @@ class FormidableCopyAction extends FrmFormAction {
 				}
 			});
 
+
+			function get_update_fields($, actionId, form_drop_down, form_copy_security, target) {
+				$("#primary-loading-" + actionId).show();
+				$.post("<?= admin_url('admin-ajax.php'); ?>", {
+					'action': 'get_form_update_fields',
+					'form_destination_id': form_drop_down.val(),
+					'form-copy-security': form_copy_security
+				}, function (data) {
+					if (data) {
+						$("[name='" + target + "']").empty().append(data).parent().parent().show();
+					}
+					else {
+						alert("Error, contact to administrator!");
+					}
+
+				}).fail(function () {
+					alert("Error, contact to administrator!");
+				}).always(function () {
+					$("#primary-loading-" + actionId).hide();
+				});
+			}
+
 			jQuery(document).ready(function ($) {
 				var ajax_url = "<?= admin_url('admin-ajax.php'); ?>";
+				var fac_allow_update = $(".fac_allow_primary_update");
+				var form_drop_down = $("[name='<?php echo $action_control->get_field_name( 'form_destination_id' ) ?>']");
+				fac_allow_update.click(function () {
+					var target = $(this).attr("target");
+					var form_copy_security = $(this).attr("form-copy-security");
+					var actionId = $(this).attr("action-id");
+					console.log(form_drop_down.val());
+					if ($(this).is(":checked")) {
+						if(form_drop_down.val() ) {
+							get_update_fields($, actionId, form_drop_down, form_copy_security, target);
+						}
+						else{
+							alert("Please elect a destination form.");
+							$(this).attr('checked', false);
+						}
+					}
+					else {
+						$("[name='" + target + "']").parent().parent().hide();
+					}
+				});
+
 				jQuery(".frm_single_formidable_copy_settings").each(function () {
 					var actionId = $(this).attr("data-actionkey");
 
@@ -147,15 +217,23 @@ class FormidableCopyAction extends FrmFormAction {
 							'form-instance-number': <?= $this->number ?>
 						}, function (data) {
 							if (data) {
-								$("#copy-table-content-" + actionId).empty();
-								$("#copy-table-content-" + actionId).append(data);
+								$("#copy-table-content-" + actionId).empty().append(data);
+								if ($(".fac_allow_primary_update").is(":checked")) {
+									get_update_fields(
+										$,
+										actionId,
+										$("[name='<?php echo $action_control->get_field_name( 'form_destination_id' ) ?>']"),
+										$(".fac_allow_primary_update").attr("form-copy-security"),
+										$(".fac_allow_primary_update").attr("target")
+									);
+								}
 							}
 							else {
-								alert("Error, contacte al administrador!");
+								alert("Error, contact to administrator!");
 							}
 
 						}).fail(function () {
-							alert("Error, contacte al administrador!");
+							alert("Error, contact to administrator!");
 						}).always(function () {
 							$("#pda-loading-" + actionId).hide();
 						});
@@ -175,10 +253,12 @@ class FormidableCopyAction extends FrmFormAction {
 	 */
 	function get_defaults() {
 		$result = array(
-			'form_id'               => $this->get_field_name( 'form_id' ),
-			'form_destination_id'   => '',
-			'form_destination_data' => '',
-			'form_validate_data'    => '',
+			'form_id'                          => $this->get_field_name( 'form_id' ),
+			'form_destination_id'              => '',
+			'form_destination_data'            => '',
+			'form_validate_data'               => '',
+			'form_destination_primary_enabled' => '',
+			'form_destination_primary_key'     => '',
 		);
 
 		if ( $this->form_id != null ) {
