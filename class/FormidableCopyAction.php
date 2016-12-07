@@ -38,6 +38,10 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( $form_action->post_content['form_validate_data'] == "1" ) {
 			$allow_validation = "checked='checked'";
 		}
+		$form_destination_repeatable = "";
+		if ( $form_action->post_content['form_destination_repeatable'] == "1" ) {
+			$form_destination_repeatable = "checked='checked'";
+		}
 		$allow_update = "";
 		if ( ! empty( $form_action->post_content['form_destination_primary_enabled'] ) && $form_action->post_content['form_destination_primary_enabled'] == '1' ) {
 			$show_primary_key = "";
@@ -66,6 +70,15 @@ class FormidableCopyAction extends FrmFormAction {
 					<td>
 						<input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
 						<?= FormidableCopyActionManager::t( "If you check this, the action validate the entry values before insert into the destination form." ) ?>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<label for="repeatable_section_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Repeatable as Single: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" <?= $form_destination_repeatable ?> name="<?php echo $action_control->get_field_name( 'form_destination_repeatable' ) ?>" id="repeatable_section_<?= $this->number ?>" value="1"/>
+						<?= FormidableCopyActionManager::t( "If you check this, each item in a repeatable section will be send to the destination." ) ?>
 					</td>
 				</tr>
 				<tr>
@@ -187,10 +200,10 @@ class FormidableCopyAction extends FrmFormAction {
 					var actionId = $(this).attr("action-id");
 					console.log(form_drop_down.val());
 					if ($(this).is(":checked")) {
-						if(form_drop_down.val() ) {
+						if (form_drop_down.val()) {
 							get_update_fields($, actionId, form_drop_down, form_copy_security, target);
 						}
-						else{
+						else {
 							alert("Please elect a destination form.");
 							$(this).attr('checked', false);
 						}
@@ -259,6 +272,7 @@ class FormidableCopyAction extends FrmFormAction {
 			'form_validate_data'               => '',
 			'form_destination_primary_enabled' => '',
 			'form_destination_primary_key'     => '',
+			'form_destination_repeatable'      => '',
 		);
 
 		if ( $this->form_id != null ) {

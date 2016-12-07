@@ -291,54 +291,55 @@ class FormidableCopyActionAdmin {
 		if ( empty( $destination_data ) ) {
 			return;
 		}
+
+		$form_destination_repeatable = ! empty( $action->post_content['form_destination_repeatable'] );
+
+		//Get data set in the form action
 		$metas    = array();
 		$jsonData = json_decode( $destination_data );
 		if ( $jsonData != null ) {
 			foreach ( $jsonData as $val ) {
-				$val        = (array) $val;
-				$shortCodes = FrmFieldsHelper::get_shortcodes( $val['value'], $entry['form_id'] );
-				$content    = apply_filters( 'frm_replace_content_shortcodes', $val['value'], FrmEntry::getOne( $entry['id'] ), $shortCodes );
-				FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $content );
-				$metas[ $val['name'] ] = do_shortcode( $content );
-			}
-		}
+				$val = (array) $val;
 
-		$data = array(
-			'form_id'                             => $destination_id,
-			'frm_user_id'                         => get_current_user_id(),
-			'frm_submit_entry_' . $destination_id => wp_create_nonce( 'frm_submit_entry_nonce' ),
-			'item_meta'                           => $metas,
-		);
-
-		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1"
-		     && ! empty( $action->post_content['form_destination_primary_key'] )
-		) {
-			$search       = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
-			$result       = FrmEntryMeta::search_entry_metas( $search, $action->post_content['form_destination_primary_key'], "LIKE" );
-			$primary_data = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
-			unset( $data["item_meta"][ $action->post_content['form_destination_primary_key'] ] );
-
-			$errors = $this->validate_entries( $action, $data );
-
-			if ( empty( $errors ) ) {
-				$data["item_meta"][ $action->post_content['form_destination_primary_key'] ] = $primary_data;
-				if ( ! empty( $result ) && is_array( $result ) ) {
-					foreach ( $result as $entry_id ) {
-						FrmEntryMeta::update_entry_metas( $entry_id, $data["item_meta"] );
+				$shortCodes            = FrmFieldsHelper::get_shortcodes( $val['value'], $entry['form_id'] );
+				$fields                = FrmProFormsHelper::has_repeat_field( $entry['form_id'], false );
+				$existing_repeat_field = array();
+				foreach ( $fields as $id => $field ) {
+					$existing_repeat_field[] = $field->id;
+				}
+				$entry_internal = FrmEntry::getOne( $entry['id'], true );
+				if ( $form_destination_repeatable && ! empty( $existing_repeat_field ) ) {
+					foreach ( $entry_internal->metas as $key => $value ) {
+						if ( in_array( $key, $existing_repeat_field ) == true && is_array( $value ) == true ) {
+							foreach ( $value as $val_key => $val_entry_id ) {
+								$field_id = "";
+								foreach ( $shortCodes[0] as $short_key => $tag ) {
+									$field_id = FrmFieldsHelper::get_shortcode_tag( $shortCodes, $short_key, compact( 'conditional', 'foreach' ) );
+								}
+								if ( ! empty( $field_id ) ) {
+									$sub_entry = FrmEntryMeta::get_entry_meta_by_field( $val_entry_id, $field_id );
+									FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $sub_entry );
+									$metas[ $val_entry_id ][ $val['name'] ] = do_shortcode( $sub_entry );
+								}
+							}
+						}
 					}
 				} else {
-					FrmEntry::create( $data );
+					$content = apply_filters( 'frm_replace_content_shortcodes', $val['value'], FrmEntry::getOne( $entry['id'] ), $shortCodes );
+					FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $content );
+					$metas[ $val['name'] ] = do_shortcode( $content );
 				}
 			}
-		} else {
-			$errors = $this->validate_entries( $action, $data );
-
-			if ( empty( $errors ) ) {
-				FrmEntry::create( $data );
-			}
+			unset( $entry_internal );
 		}
 
-
+		if ( ! $form_destination_repeatable ) {
+			$this->insert_in_destination( $action, $destination_id, $metas );
+		} else {
+			foreach ( $metas as $key => $item ) {
+				$this->insert_in_destination( $action, $destination_id, $item );
+			}
+		}
 	}
 
 	/**
@@ -369,5 +370,50 @@ class FormidableCopyActionAdmin {
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Insert data in destination form
+	 *
+	 * @param $action
+	 * @param $destination_id
+	 * @param $item
+	 */
+	private function insert_in_destination( $action, $destination_id, $item ) {
+//Process the data to insert in the target form
+		$data = array(
+			'form_id'                             => $destination_id,
+			'frm_user_id'                         => get_current_user_id(),
+			'frm_submit_entry_' . $destination_id => wp_create_nonce( 'frm_submit_entry_nonce' ),
+			'item_meta'                           => $item,
+		);
+
+		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1"
+		     && ! empty( $action->post_content['form_destination_primary_key'] )
+		) {
+			$search       = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
+			$result       = FrmEntryMeta::search_entry_metas( $search, $action->post_content['form_destination_primary_key'], "LIKE" );
+			$primary_data = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
+			unset( $data["item_meta"][ $action->post_content['form_destination_primary_key'] ] );
+
+			$errors = $this->validate_entries( $action, $data );
+
+			if ( empty( $errors ) ) {
+				$data["item_meta"][ $action->post_content['form_destination_primary_key'] ] = $primary_data;
+				if ( ! empty( $result ) && is_array( $result ) ) {
+					foreach ( $result as $entry_id ) {
+						FrmEntryMeta::update_entry_metas( $entry_id, $data["item_meta"] );
+					}
+				} else {
+					FrmEntry::create( $data );
+				}
+			}
+		} else {
+			$errors = $this->validate_entries( $action, $data );
+
+			if ( empty( $errors ) ) {
+				FrmEntry::create( $data );
+			}
+		}
 	}
 }

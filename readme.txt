@@ -12,6 +12,9 @@ Add action to push data to another form. You can validate it or update if exist.
 Add action to send data to another form.
 
 == Changelog ==
+= 1.20 =
+Adding support to process repeatable section as independent entry
+
 = 1.10 =
 Adding an update option to the plugin, now you can select a field as primary and update instead of create.
 
