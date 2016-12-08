@@ -2,8 +2,8 @@
 Contributors: gfirem
 Tags: formidable, copy form, formidable action, formidable copy form, custom action
 Requires at least: 4.5.0
-Tested up to: 4.6
-Stable tag: 1.10
+Tested up to: 4.7
+Stable tag: 1.20
 License: Apache License 2.0
 
 Add action to push data to another form. You can validate it or update if exist.

@@ -1,9 +1,9 @@
 <?php
 /*
  * Plugin Name:       Formidable copy action
- * Plugin URI:        https://github.com/gfirem/formidable_copy_action
+ * Plugin URI:        http://www.gfirem.com/en/product/copy-entries/
  * Description:       Add action to push data to another form. You can validate it or update if exist.
- * Version:           1.10
+ * Version:           1.20
  * Author:            Guillermo Figueroa Mesa
  * Author URI:        http://wwww.gfirem.com
  * Text Domain:       formidable_copy_action-locale
@@ -22,7 +22,7 @@ require_once plugin_dir_path( __FILE__ ) . 'class/FormidableCopyActionManager.ph
 
 require_once 'plugin-update-checker/plugin-update-checker.php';
 
-$myUpdateChecker = PucFactory::buildUpdateChecker( 'http://gfirem.com/update-services/?action=get_metadata&slug=formidable_copy_action', __FILE__ );
+$myUpdateChecker = PucFactory::buildUpdateChecker( 'http://www.gfirem.com/update-services/?action=get_metadata&slug=formidable_copy_action', __FILE__ );
 $myUpdateChecker->addQueryArgFilter( 'appendFormidableCopyActionQueryArgsCredentials' );
 
 /**
