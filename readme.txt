@@ -1,6 +1,6 @@
 === Formidable Copy Action ===
 Contributors: gfirem
-Tags: formidable, copy form, formidable action, formidable copy form, custom action
+Tags: formidable, copy form entries, formidable action, formidable copy form entries, custom action, update entries between form
 Requires at least: 4.5.0
 Tested up to: 4.7
 Stable tag: 1.20
@@ -12,6 +12,9 @@ Add action to push data to another form. You can validate it or update if exist.
 Add action to send data to another form.
 
 == Changelog ==
+= 1.2.1 =
+Adding new function to avoid lost data in the destination when the source send empty data in the entry.
+
 = 1.20 =
 Adding support to process repeatable section as independent entry
 
