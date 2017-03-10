@@ -1,2 +1,2 @@
 # formidable_copy_action
-Formidable new action plugins that enable to send data between forms
+Add action to send data to another form. Is possible to update, also exist the option to push only the data inside a repeatable section. 

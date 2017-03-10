@@ -5,96 +5,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class FormidableCopyActionAdmin {
-	protected $version;
-	private $slug;
-	private $gManager;
 	
-	public function __construct( $version, $slug, $gManager ) {
-		$this->version  = $version;
-		$this->slug     = $slug;
-		$this->gManager = $gManager;
-	}
-	
-	/**
-	 * Register copy action to formidable
-	 *
-	 * @param $actions
-	 *
-	 * @return mixed
-	 */
-	public function addFormidableCopyAction( $actions ) {
-		$actions['formidable_copy'] = 'FormidableCopyAction';
-		include_once( plugin_dir_path( dirname( __FILE__ ) ) . 'class/FormidableCopyAction.php' );
-		
-		return $actions;
-	}
-	
-	/**
-	 * Add setting page to global formidable settings
-	 *
-	 * @param $sections
-	 *
-	 * @return mixed
-	 */
-	public function addFormidableCopyActionSettingPage( $sections ) {
-		$sections['copy'] = array(
-			'class'    => 'FormidableCopyActionSettings',
-			'function' => 'route',
-		);
-		
-		return $sections;
-	}
-	
-	/**
-	 * Add a "Settings" link to the plugin row in the "Plugins" page.
-	 *
-	 * @param $actions
-	 * @param string $pluginFile
-	 *
-	 * @return array
-	 */
-	public function addFormidableCopyActionSettingLink( $actions, $pluginFile ) {
-		if ( 'formidable_copy_action/formidable_copy_action.php' == $pluginFile ) {
-			$link = sprintf( '<a href="%s">%s</a>', esc_attr( admin_url( 'admin.php?page=formidable-settings&t=copy_settings' ) ), FormidableCopyActionManager::t( "Settings" ) );
-			array_unshift( $actions, $link );
-		}
-		
-		return $actions;
-	}
-	
-	/**
-	 * Add styles to action icon
-	 */
-	public function admin_FormidableCopyAction_style() {
-		$current_screen = get_current_screen();
-		if ( $current_screen->id === 'toplevel_page_formidable' ) {
-			?>
-            <style>
-                .frm_formidable_copy_action.frm_bstooltip.frm_active_action.dashicons.dashicons-admin-page.copy_action_icon {
-                    height: auto;
-                    width: auto;
-                    font-size: 13px;
-                }
-
-                .frm_form_action_icon.dashicons.dashicons-admin-page.copy_action_icon {
-                    height: auto;
-                    width: auto;
-                    font-size: 13px;
-                }
-            </style>
-			<?php
+	public function __construct() {
+		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		add_action( 'fs_is_submenu_visible_' . FormidableCopyActionManager::getSlug(), array( $this, 'handle_sub_menu' ), 10, 2 );
+		if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_js' ) );
+			add_action( 'wp_ajax_get_form_fields', array( $this, 'ajaxGetFormFields' ) );
+//		add_action( 'wp_ajax_nopriv_get_form_fields', array( $this, 'ajaxGetFormFields' ) ); //Not needed only work from the admin
+			add_action( 'wp_ajax_get_form_update_fields', array( $this, 'ajaxGetUpdateFields' ) );
+//		add_action( 'wp_ajax_nopriv_get_form_update_fields', array( $this, 'ajaxGetUpdateFields' ) ); //Not needed only work from the admin
+			add_filter( 'wp_kses_allowed_html', array( $this, 'allowedHtml' ), 10, 2 );
+			add_shortcode( "form-copy-security", array( $this, 'formSecContent' ) );
 		}
 	}
 	
+	public function handle_sub_menu( $is_visible, $menu_id ) {
+		if ( $menu_id == 'account' ) {
+			$is_visible = false;
+		}
+		
+		return $is_visible;
+	}
+	
 	/**
-	 * Generic point to add style files
+	 * Adding the Admin Page
 	 */
-	public function enqueue_FormidableCopyAction_style() {
-		wp_enqueue_style( 'jquery' );
-		wp_enqueue_style(
-			'formidable_copy_action',
-			COPY_ACTION_CSS_PATH . 'formidable_copy_action.css'
-		);
+	public function admin_menu() {
+		add_menu_page( FormidableCopyActionManager::t( 'Copy Entries' ), FormidableCopyActionManager::t( 'Copy Entries' ), 'manage_options', FormidableCopyActionManager::getSlug(), array( $this, 'screen' ), 'dashicons-admin-page' );
+	}
+	
+	public function screen() {
+		FormidableCopyActionFreemius::getFreemius()->get_logger()->entrance();
+		FormidableCopyActionFreemius::getFreemius()->_account_page_load();
+		FormidableCopyActionFreemius::getFreemius()->_account_page_render();
+	}
+	
+	/**
+	 * Include script
+	 */
+	public function enqueue_js() {
+		wp_register_script( 'formidable_copy_action', COPY_ACTION_JS_PATH . 'formidable_copy_action.js', array( "jquery" ), true );
+		wp_enqueue_script( 'formidable_copy_action' );
 	}
 	
 	/**
@@ -105,7 +57,7 @@ class FormidableCopyActionAdmin {
 	 *
 	 * @return mixed
 	 */
-	public function allowedHtmlFormidableCopyAction( $allowedPostTags, $context ) {
+	public function allowedHtml( $allowedPostTags, $context ) {
 		if ( $context == 'post' ) {
 			$allowedPostTags['input']['form-copy-security'] = 1;
 			$allowedPostTags['input']['value']              = 1;
@@ -122,7 +74,7 @@ class FormidableCopyActionAdmin {
 	 *
 	 * @return string
 	 */
-	public function formSecFormidableCopyActionContent( $attr, $content = null ) {
+	public function formSecContent( $attr, $content = null ) {
 		$internal_attr = shortcode_atts( array(
 			'act' => 'get_form_field',
 		), $attr );
@@ -221,7 +173,7 @@ class FormidableCopyActionAdmin {
 	/**
 	 * Ajax response to get forms fields
 	 */
-	public function ajaxFormidableCopyActionGetFormFields() {
+	public function ajaxGetFormFields() {
 		if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return;
 		}
@@ -230,7 +182,7 @@ class FormidableCopyActionAdmin {
 			die();
 		}
 		
-		echo self::getFormFields( $_POST['form-instance-number'], $_POST['form_destination_id'], null );
+		echo self::getFormFields( FrmAppHelper::get_post_param( 'form-instance-number' ), FrmAppHelper::get_post_param( 'form_destination_id' ), null );
 		
 		die();
 	}
@@ -238,7 +190,7 @@ class FormidableCopyActionAdmin {
 	/**
 	 * Ajax response to get forms fields
 	 */
-	public function ajaxFormidableCopyActionGetUpdateFields() {
+	public function ajaxGetUpdateFields() {
 		if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return;
 		}
@@ -247,203 +199,8 @@ class FormidableCopyActionAdmin {
 			die();
 		}
 		
-		echo self::getUpdateFields( $_POST['form_destination_id'] );
+		echo self::getUpdateFields( FrmAppHelper::get_post_param( 'form_destination_id' ) );
 		
 		die();
-	}
-	
-	/**
-	 * Formidable create action
-	 *
-	 * @param $action
-	 * @param $entry
-	 * @param $form
-	 */
-	public function onFormidableCopyActionCreate( $action, $entry, $form ) {
-		$this->processAction( $action, $entry );
-	}
-	
-	/**
-	 * Formidable update action
-	 *
-	 * @param $action
-	 * @param $entry
-	 * @param $form
-	 */
-	public function onFormidableCopyActionUpdate( $action, $entry, $form ) {
-		$this->processAction( $action, $entry );
-	}
-	
-	/**
-	 * Process source action to create entry in destination form
-	 *
-	 * @param $action
-	 * @param $entry
-	 */
-	private function processAction( $action, $entry ) {
-		$destination_id = $action->post_content['form_destination_id'];
-		if ( empty( $destination_id ) ) {
-			return;
-		}
-		
-		$destination_data = $action->post_content['form_destination_data'];
-		if ( empty( $destination_data ) ) {
-			return;
-		}
-		
-		$persit_destination_data = ! empty( $action->post_content['form_destination_persist_enabled'] );
-		$needed_fields           = array();
-		if ( $persit_destination_data ) {
-			$jsonData = json_decode( $destination_data );
-			if ( $jsonData != null ) {
-				$meta_key = array_keys( $entry->metas );
-				foreach ( $jsonData as $val ) {
-					$val        = (array) $val;
-					$shortCodes = FrmFieldsHelper::get_shortcodes( $val['value'], $entry->form_id );
-					$size       = count( $shortCodes[2] );
-					if ( ! empty( $shortCodes[2] ) && $size == 1 ) {
-						$not_exist = array_diff( $shortCodes[2], $meta_key );
-						if ( ! empty( $not_exist ) ) {
-							$needed_fields[ $val['name'] ] = $not_exist;
-						}
-					}
-				}
-				
-				if ( ! empty( $needed_fields ) ) {
-					$old_values = array();
-					foreach ( $needed_fields as $needed_field_key => $needed_field_value ) {
-						$value                           = FrmEntryMeta::get_entry_metas_for_field( $needed_field_key );
-						$old_values[ $needed_field_key ] = $value[0];
-						if ( ! isset( $entry->metas[ $needed_field_key ] ) ) {
-							$entry->metas[ $needed_field_value[0] ] = $value[0];
-						}
-					}
-				}
-				
-			}
-		}
-		
-		$form_destination_repeatable = ! empty( $action->post_content['form_destination_repeatable'] );
-		
-		//Get data set in the form action
-		$metas    = array();
-		$jsonData = json_decode( $destination_data );
-		if ( $jsonData != null ) {
-			foreach ( $jsonData as $val ) {
-				$val                   = (array) $val;
-				$shortCodes            = FrmFieldsHelper::get_shortcodes( $val['value'], $entry->form_id );
-				$fields                = FrmProFormsHelper::has_repeat_field( $entry->form_id, false );
-				$existing_repeat_field = array();
-				foreach ( $fields as $id => $field ) {
-					$existing_repeat_field[] = $field->id;
-				}
-				$entry_internal = FrmEntry::getOne( $entry->id, true );
-				if ( $form_destination_repeatable && ! empty( $existing_repeat_field ) ) {
-					foreach ( $entry_internal->metas as $key => $value ) {
-						if ( in_array( $key, $existing_repeat_field ) == true && is_array( $value ) == true ) {
-							foreach ( $value as $val_key => $val_entry_id ) {
-								$field_id = "";
-								foreach ( $shortCodes[0] as $short_key => $tag ) {
-									$field_id = FrmFieldsHelper::get_shortcode_tag( $shortCodes, $short_key, compact( 'conditional', 'foreach' ) );
-								}
-								if ( ! empty( $field_id ) ) {
-									$sub_entry = FrmEntryMeta::get_entry_meta_by_field( $val_entry_id, $field_id );
-									FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $sub_entry );
-									$metas[ $val_entry_id ][ $val['name'] ] = do_shortcode( $sub_entry );
-								}
-							}
-						}
-					}
-				} else {
-					$content = apply_filters( 'frm_replace_content_shortcodes', $val['value'], $entry, $shortCodes );
-					FrmProFieldsHelper::replace_non_standard_formidable_shortcodes( array(), $content );
-					$metas[ $val['name'] ] = do_shortcode( $content );
-				}
-			}
-			unset( $entry_internal );
-		}
-		
-		if ( ! $form_destination_repeatable ) {
-			$this->insert_in_destination( $action, $destination_id, $metas );
-		} else {
-			foreach ( $metas as $key => $item ) {
-				$this->insert_in_destination( $action, $destination_id, $item );
-			}
-		}
-	}
-	
-	/**
-	 * Validate the entry if necessary
-	 *
-	 * @param $action
-	 * @param $data
-	 * @param bool $exclude
-	 *
-	 * @return array
-	 */
-	private function validate_entries( $action, $data, $exclude = false ) {
-		$errors = array();
-		if ( ! empty( $action->post_content['form_validate_data'] ) && $action->post_content['form_validate_data'] == "1" ) {
-			$errors = FrmEntryValidate::validate( $data, $exclude );
-			if ( ! empty( $errors ) ) {
-				$error_str = "";
-				foreach ( $errors as $key => $value ) {
-					$error_str .= $key . " : " . $value . "<br/>";
-				}
-				FormidableCopyActionLogs::log( array(
-					'action'         => "Create",
-					'object_type'    => FormidableCopyActionManager::getShort(),
-					'object_subtype' => "validation_error",
-					'object_name'    => $error_str,
-				) );
-			}
-		}
-		
-		return $errors;
-	}
-	
-	/**
-	 * Insert data in destination form
-	 *
-	 * @param $action
-	 * @param $destination_id
-	 * @param $item
-	 */
-	private function insert_in_destination( $action, $destination_id, $item ) {
-		//Process the data to insert in the target form
-		$data = array(
-			'form_id'                             => $destination_id,
-			'frm_user_id'                         => get_current_user_id(),
-			'frm_submit_entry_' . $destination_id => wp_create_nonce( 'frm_submit_entry_nonce' ),
-			'item_meta'                           => $item,
-		);
-		
-		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1"
-		     && ! empty( $action->post_content['form_destination_primary_key'] )
-		) {
-			$search       = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
-			$result       = FrmEntryMeta::search_entry_metas( $search, $action->post_content['form_destination_primary_key'], "LIKE" );
-			$primary_data = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
-			unset( $data["item_meta"][ $action->post_content['form_destination_primary_key'] ] );
-			
-			$errors = $this->validate_entries( $action, $data );
-			
-			if ( empty( $errors ) ) {
-				$data["item_meta"][ $action->post_content['form_destination_primary_key'] ] = $primary_data;
-				if ( ! empty( $result ) && is_array( $result ) ) {
-					foreach ( $result as $entry_id ) {
-						FrmEntryMeta::update_entry_metas( $entry_id, $data["item_meta"] );
-					}
-				} else {
-					FrmEntry::create( $data );
-				}
-			}
-		} else {
-			$errors = $this->validate_entries( $action, $data );
-			
-			if ( empty( $errors ) ) {
-				FrmEntry::create( $data );
-			}
-		}
 	}
 }

@@ -1,9 +1,23 @@
 <?php
+/**
+ * @package WordPress
+ * @subpackage Formidable, formidable_copy_action
+ * @author GFireM
+ * @copyright 2017
+ * @link http://www.gfirem.com
+ * @license http://www.apache.org/licenses/
+ *
+ */
+
 /*
- * Plugin Name:       Formidable copy action
- * Plugin URI:        http://www.gfirem.com/en/product/copy-entries/
- * Description:       Add action to push data to another form. You can validate it or update if exist.
- * Version:           1.2.1
+ * @since             1.0.0
+ * @package           formidable_copy_action
+ *
+ * @wordpress-plugin
+ * Plugin Name:       Formidable Copy Action
+ * Plugin URI:        http://www.gfirem.com/copy-entries/
+ * Description:       Add action to push data to another form. You can validate or update if exist.
+ * Version:           2.0.0
  * Author:            Guillermo Figueroa Mesa
  * Author URI:        http://wwww.gfirem.com
  * Text Domain:       formidable_copy_action-locale
@@ -16,52 +30,67 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'COPY_ACTION_CSS_PATH', plugin_dir_url( __FILE__ ) . 'css/' );
-
-require_once plugin_dir_path( __FILE__ ) . 'class/FormidableCopyActionManager.php';
-
-require_once 'plugin-update-checker/plugin-update-checker.php';
-
-$myUpdateChecker = PucFactory::buildUpdateChecker( 'http://www.gfirem.com/update-services/?action=get_metadata&slug=formidable_copy_action', __FILE__ );
-$myUpdateChecker->addQueryArgFilter( 'appendFormidableCopyActionQueryArgsCredentials' );
-
-/**
- * Append the order key to the update server URL
- *
- * @param $queryArgs
- *
- * @return
- */
-function appendFormidableCopyActionQueryArgsCredentials( $queryArgs ) {
-	$queryArgs['order_key'] = get_option( FormidableCopyActionManager::getShort() . 'licence_key', '' );
-
-	return $queryArgs;
-}
-
-function FormidableCopyActionBootLoader() {
-	add_action( 'plugins_loaded', 'setFormidableCopyActionTranslation' );
-	$manager = new FormidableCopyActionManager();
-	$manager->run();
-}
-
-function checkRequiredFormidableCopyAction() {
-	if ( ! class_exists( "FrmHooksController" ) ) {
-		deactivate_plugins( plugin_basename( __FILE__ ) );
-		wp_die(
-			FormidableCopyActionManager::t( 'This plugins required Formidable to run!' ),
-			FormidableCopyActionManager::t( 'Formidable Copy Action' ),
-			array( 'back_link' => true )
-		);
+if ( ! class_exists( 'formidable_copy_action' ) ) {
+	
+	require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'FormidableCopyActionFreemius.php';
+	FormidableCopyActionFreemius::start_freemius();
+	
+	class formidable_copy_action {
+		
+		/**
+		 * Instance of this class.
+		 *
+		 * @var object
+		 */
+		protected static $instance = null;
+		
+		/**
+		 * Initialize the plugin.
+		 */
+		private function __construct() {
+			$this->constants();
+			$this->load_plugin_textdomain();
+			require_once COPY_ACTION_CLASSES_PATH . '/include/WP_Requirements.php';
+			require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionRequirements.php';
+			$this->requirements = new FormidableCopyActionRequirements( 'formidable_copy_action-locale' );
+			if ( $this->requirements->satisfied() ) {
+				require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionManager.php';
+				new FormidableCopyActionManager();
+			} else {
+				$fauxPlugin = new WP_Faux_Plugin( FormidableCopyActionManager::t( 'Formidable Copy Action' ), $this->requirements->getResults() );
+				$fauxPlugin->show_result( COPY_ACTION_BASE_NAME );
+			}
+		}
+		
+		private function constants(){
+			define( 'COPY_ACTION_BASE_NAME', plugin_basename( __FILE__ ) );
+			define( 'COPY_ACTION_URL_PATH', trailingslashit( wp_normalize_path( plugin_dir_url( __FILE__ ) ) ) );
+			define( 'COPY_ACTION_CSS_PATH', COPY_ACTION_URL_PATH . 'assets/css/' );
+			define( 'COPY_ACTION_JS_PATH', COPY_ACTION_URL_PATH . 'assets/js/' );
+			define( 'COPY_ACTION_CLASSES_PATH', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR );
+		}
+		
+		/**
+		 * Return an instance of this class.
+		 *
+		 * @return object A single instance of this class.
+		 */
+		public static function get_instance() {
+			// If the single instance hasn't been set, set it now.
+			if ( null == self::$instance ) {
+				self::$instance = new self;
+			}
+			
+			return self::$instance;
+		}
+		
+		/**
+		 * Load the plugin text domain for translation.
+		 */
+		public function load_plugin_textdomain() {
+			load_plugin_textdomain( 'formidable_copy_action-locale', false, basename( dirname( __FILE__ ) ) . '/languages' );
+		}
 	}
+	
+	add_action( 'plugins_loaded', array( 'formidable_copy_action', 'get_instance' ), 1);
 }
-
-register_activation_hook( __FILE__, "checkRequiredFormidableCopyAction" );
-
-/**
- * Add translation files
- */
-function setFormidableCopyActionTranslation() {
-	load_plugin_textdomain( 'formidable_copy_action-locale', false, basename( dirname( __FILE__ ) ) . '/languages' );
-}
-
-FormidableCopyActionBootLoader();
