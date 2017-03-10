@@ -53,8 +53,8 @@ if ( ! class_exists( 'formidable_copy_action' ) ) {
 			require_once COPY_ACTION_CLASSES_PATH . '/include/WP_Requirements.php';
 			require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionRequirements.php';
 			$this->requirements = new FormidableCopyActionRequirements( 'formidable_copy_action-locale' );
+			require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionManager.php';
 			if ( $this->requirements->satisfied() ) {
-				require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionManager.php';
 				new FormidableCopyActionManager();
 			} else {
 				$fauxPlugin = new WP_Faux_Plugin( FormidableCopyActionManager::t( 'Formidable Copy Action' ), $this->requirements->getResults() );

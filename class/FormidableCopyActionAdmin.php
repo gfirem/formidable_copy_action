@@ -7,8 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FormidableCopyActionAdmin {
 	
 	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'fs_is_submenu_visible_' . FormidableCopyActionManager::getSlug(), array( $this, 'handle_sub_menu' ), 10, 2 );
+		$this->add_menu();
 		if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_js' ) );
 			add_action( 'wp_ajax_get_form_fields', array( $this, 'ajaxGetFormFields' ) );
@@ -18,6 +17,11 @@ class FormidableCopyActionAdmin {
 			add_filter( 'wp_kses_allowed_html', array( $this, 'allowedHtml' ), 10, 2 );
 			add_shortcode( "form-copy-security", array( $this, 'formSecContent' ) );
 		}
+	}
+	
+	private function add_menu() {
+		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		add_action( 'fs_is_submenu_visible_' . FormidableCopyActionManager::getSlug(), array( $this, 'handle_sub_menu' ), 10, 2 );
 	}
 	
 	public function handle_sub_menu( $is_visible, $menu_id ) {
