@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class FormidableCopyActionRequirements extends WP_Requirements {
+class FormidableCopyActionRequirements extends WP_Requirement {
 	
 	public function __construct( $text_domain = 'WP_Requirements' ) {
 		parent::__construct( $text_domain );

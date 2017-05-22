@@ -15,7 +15,8 @@ class FormidableCopyAction extends FrmFormAction {
 				add_action( 'admin_head', array( $this, 'admin_style' ) );
 				add_action( 'frm_trigger_formidable_copy_create_action', array( $this, 'onCreate' ), 10, 3 );
 				add_action( 'frm_trigger_formidable_copy_update_action', array( $this, 'onUpdate' ), 10, 3  );
-                
+				add_action( 'frm_trigger_formidable_copy_delete_action', array( $this, 'onDelete' ), 10, 3  );
+    
 				$action_ops = array(
 					'classes'  => 'dashicons dashicons-admin-page copy_action_icon',
 					'limit'    => 99,
@@ -79,6 +80,17 @@ class FormidableCopyAction extends FrmFormAction {
 	 * @param $form
 	 */
 	public function onUpdate( $action, $entry, $form ) {
+		$this->processAction( $action, $entry );
+	}
+	
+	/**
+	 * Formidable update action
+	 *
+	 * @param $action
+	 * @param $entry
+	 * @param $form
+	 */
+	public function onDelete( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
 	

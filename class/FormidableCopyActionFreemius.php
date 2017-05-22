@@ -60,7 +60,7 @@ class FormidableCopyActionFreemius {
 				$license_data = self::get_license_option();
 				if ( ! empty( $license_data['key'] ) && ! empty( $license_data['user'] ) && ! empty( $license_data['site'] ) ) {
 					if ( ! $free->is_paying() && ! $free->has_active_valid_license() && is_multisite() && empty( $license_data['key']->quota ) ) {
-						$free->opt_in_from_code( $license_data['user'], $license_data['key']->secret_key );
+//						$free->opt_in_from_code( $license_data['user'], $license_data['key']->secret_key );
 					}
 				}
 			}
