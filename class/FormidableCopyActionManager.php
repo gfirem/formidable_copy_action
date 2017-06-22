@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FormidableCopyActionManager {
 	protected static $plugin_slug = 'formidable-copy-action';
 	protected static $plugin_short = 'FormidableCopyAction';
-	protected static $version = '2.0.1';
+	protected static $version = '2.0.2';
 	
 	public function __construct() {
 		require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionLogs.php';
