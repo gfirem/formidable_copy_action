@@ -64,9 +64,8 @@ if ( ! class_exists( 'formidable_copy_action' ) ) {
 		
 		private function constants(){
 			define( 'COPY_ACTION_BASE_NAME', plugin_basename( __FILE__ ) );
-			define( 'COPY_ACTION_URL_PATH', trailingslashit( wp_normalize_path( plugin_dir_url( __FILE__ ) ) ) );
-			define( 'COPY_ACTION_CSS_PATH', COPY_ACTION_URL_PATH . 'assets/css/' );
-			define( 'COPY_ACTION_JS_PATH', COPY_ACTION_URL_PATH . 'assets/js/' );
+			define( 'COPY_ACTION_CSS_PATH', plugin_dir_url( __FILE__ ) . '/assets/css/' );
+			define( 'COPY_ACTION_JS_PATH', plugin_dir_url( __FILE__ ) . '/assets/js/' );
 			define( 'COPY_ACTION_CLASSES_PATH', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR );
 		}
 		
