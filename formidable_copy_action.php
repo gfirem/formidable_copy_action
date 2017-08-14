@@ -17,7 +17,7 @@
  * Plugin Name:       Formidable Copy Action
  * Plugin URI:        http://www.gfirem.com/copy-entries/
  * Description:       Add action to push data to another form. You can validate or update if exist.
- * Version:           2.0.3
+ * Version:           2.0.4
  * Author:            Guillermo Figueroa Mesa
  * Author URI:        http://wwww.gfirem.com
  * Text Domain:       formidable_copy_action-locale
