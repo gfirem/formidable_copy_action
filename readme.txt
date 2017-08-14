@@ -2,7 +2,7 @@
 Contributors: gfirem
 Tags: formidable, copy form entries, formidable action, formidable copy form entries, custom action, update entries between form
 Requires at least: 4.5.0
-Tested up to: 4.7.2
+Tested up to: 4.8.1
 Stable tag: 2.0.4
 License: Apache License 2.0
 
