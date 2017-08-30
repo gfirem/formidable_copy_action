@@ -1,22 +1,17 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 class FormidableCopyAction extends FrmFormAction {
-	
 	protected $form_default = array( 'wrk_name' => '' );
-	
 	public function __construct() {
 		try {
 			// check if is paying
 			if ( class_exists( "FrmProAppController" ) ) {
 				add_action( 'admin_head', array( $this, 'admin_style' ) );
 				add_action( 'frm_trigger_formidable_copy_create_action', array( $this, 'onCreate' ), 10, 3 );
-				add_action( 'frm_trigger_formidable_copy_update_action', array( $this, 'onUpdate' ), 10, 3  );
-				add_action( 'frm_trigger_formidable_copy_delete_action', array( $this, 'onDelete' ), 10, 3  );
-    
+				add_action( 'frm_trigger_formidable_copy_update_action', array( $this, 'onUpdate' ), 10, 3 );
+				add_action( 'frm_trigger_formidable_copy_delete_action', array( $this, 'onDelete' ), 10, 3 );
 				$action_ops = array(
 					'classes'  => 'dashicons dashicons-admin-page copy_action_icon',
 					'limit'    => 99,
@@ -24,7 +19,6 @@ class FormidableCopyAction extends FrmFormAction {
 					'priority' => 50,
 					'event'    => array( 'create', 'update', 'import', 'delete' ),
 				);
-				
 				$this->FrmFormAction( 'formidable_copy', FormidableCopyActionManager::t( 'Formidable Copy Action' ), $action_ops );
 			}
 		} catch ( Exception $ex ) {
@@ -36,7 +30,6 @@ class FormidableCopyAction extends FrmFormAction {
 			) );
 		}
 	}
-	
 	/**
 	 * Add styles to action icon
 	 */
@@ -44,23 +37,22 @@ class FormidableCopyAction extends FrmFormAction {
 		$current_screen = get_current_screen();
 		if ( $current_screen->id === 'toplevel_page_formidable' ) {
 			?>
-            <style>
-                .frm_formidable_copy_action.frm_bstooltip.frm_active_action.dashicons.dashicons-admin-page.copy_action_icon {
-                    height: auto;
-                    width: auto;
-                    font-size: 13px;
-                }
+			<style>
+				.frm_formidable_copy_action.frm_bstooltip.frm_active_action.dashicons.dashicons-admin-page.copy_action_icon {
+					height: auto;
+					width: auto;
+					font-size: 13px;
+				}
 
-                .frm_form_action_icon.dashicons.dashicons-admin-page.copy_action_icon {
-                    height: auto;
-                    width: auto;
-                    font-size: 13px;
-                }
-            </style>
+				.frm_form_action_icon.dashicons.dashicons-admin-page.copy_action_icon {
+					height: auto;
+					width: auto;
+					font-size: 13px;
+				}
+			</style>
 			<?php
 		}
 	}
-	
 	/**
 	 * Formidable create action
 	 *
@@ -71,7 +63,6 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onCreate( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
-	
 	/**
 	 * Formidable update action
 	 *
@@ -82,7 +73,6 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onUpdate( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
-	
 	/**
 	 * Formidable update action
 	 *
@@ -93,7 +83,6 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onDelete( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
-	
 	/**
 	 * Process source action to create entry in destination form
 	 *
@@ -105,14 +94,13 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( empty( $destination_id ) ) {
 			return;
 		}
-		
 		$destination_data = $action->post_content['form_destination_data'];
 		if ( empty( $destination_data ) ) {
 			return;
 		}
-		
 		$persit_destination_data = ! empty( $action->post_content['form_destination_persist_enabled'] );
-		$needed_fields           = array();
+		//This are the fields need to persist in the destination
+		$persist_fields = array();
 		if ( $persit_destination_data ) {
 			$jsonData = json_decode( $destination_data );
 			if ( $jsonData != null ) {
@@ -123,28 +111,35 @@ class FormidableCopyAction extends FrmFormAction {
 					$size       = count( $shortCodes[2] );
 					if ( ! empty( $shortCodes[2] ) && $size == 1 ) {
 						$not_exist = array_diff( $shortCodes[2], $meta_key );
-						if ( ! empty( $not_exist ) ) {
-							$needed_fields[ $val['name'] ] = $not_exist;
+						if ( ! empty( $not_exist[0] ) ) {
+							if ( ! is_numeric( $not_exist[0] ) ) {
+								$field_id = FrmField::get_id_by_key( $not_exist[0] );
+							} else {
+								$field_id = $not_exist[0];
+							}
+							$persist_fields[ $val['name'] ] = $field_id;
 						}
 					}
 				}
-				if ( ! empty( $needed_fields ) ) {
-					$old_values = array();
-					foreach ( $needed_fields as $needed_field_key => $needed_field_value ) {
-						$value                           = FrmEntryMeta::get_entry_metas_for_field( $needed_field_value[0] );
-						$old_values[ $needed_field_key ] = $value[0];
-						if ( isset( $entry->metas[ $needed_field_key ] ) ) {
-							$entry->metas[ $needed_field_value[0] ] = $value[0];
-						} else {
-							$entry->metas[ $needed_field_value[0] ] = '';
-						}
-					}
-				}
+//				if ( ! empty( $needed_fields ) ) {
+//					$old_values = array();
+//					foreach ( $needed_fields as $needed_field_key => $needed_field_value ) {
+//						$value                           = FrmEntryMeta::get_entry_metas_for_field( $needed_field_value[0] );
+//						if ( ! empty( $value ) && ! empty( $value[0] ) ) {
+//							$old_values[ $needed_field_key ] = $value[0];
+//							if ( isset( $entry->metas[ $needed_field_key ] ) ) {
+//								$entry->metas[ $needed_field_value[0] ] = $value[0];
+//							} else {
+//								$entry->metas[ $needed_field_value[0] ] = '';
+//							}
+//						} else {
+//							$entry->metas[ $needed_field_value[0] ] = '';
+//						}
+//					}
+//				}
 			}
 		}
-		
 		$form_destination_repeatable = ! empty( $action->post_content['form_destination_repeatable'] );
-		
 		//Get data set in the form action
 		$metas    = array();
 		$jsonData = json_decode( $destination_data );
@@ -182,21 +177,19 @@ class FormidableCopyAction extends FrmFormAction {
 			}
 			unset( $entry_internal );
 		}
-		
 		if ( ! $form_destination_repeatable ) {
-			$this->insert_in_destination( $action, $destination_id, $metas );
+			$this->insert_in_destination( $action, $destination_id, $metas, $persist_fields );
 		} else {
 			foreach ( $metas as $key => $item ) {
-				$this->insert_in_destination( $action, $destination_id, $item );
+				$this->insert_in_destination( $action, $destination_id, $item, $persist_fields );
 			}
 		}
 	}
-	
 	/**
 	 * Validate the entry if necessary
 	 *
-	 * @param $action
-	 * @param $data
+	 * @param      $action
+	 * @param      $data
 	 * @param bool $exclude
 	 *
 	 * @return array
@@ -218,18 +211,17 @@ class FormidableCopyAction extends FrmFormAction {
 				) );
 			}
 		}
-		
 		return $errors;
 	}
-	
 	/**
 	 * Insert data in destination form
 	 *
 	 * @param $action
 	 * @param $destination_id
 	 * @param $item
+	 * @param $persist_fields
 	 */
-	private function insert_in_destination( $action, $destination_id, $item ) {
+	private function insert_in_destination( $action, $destination_id, $item, $persist_fields ) {
 		//Process the data to insert in the target form
 		$data = array(
 			'form_id'                             => $destination_id,
@@ -237,21 +229,19 @@ class FormidableCopyAction extends FrmFormAction {
 			'frm_submit_entry_' . $destination_id => wp_create_nonce( 'frm_submit_entry_nonce' ),
 			'item_meta'                           => $item,
 		);
-		
-		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1"
-		     && ! empty( $action->post_content['form_destination_primary_key'] )
-		) {
+		if ( ! empty( $action->post_content['form_destination_primary_enabled'] ) && $action->post_content['form_destination_primary_enabled'] == "1" && ! empty( $action->post_content['form_destination_primary_key'] ) ) {
 			$search       = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
 			$result       = FrmEntryMeta::search_entry_metas( $search, $action->post_content['form_destination_primary_key'], "LIKE" );
 			$primary_data = $data["item_meta"][ $action->post_content['form_destination_primary_key'] ];
 			unset( $data["item_meta"][ $action->post_content['form_destination_primary_key'] ] );
-			
 			$errors = $this->validate_entries( $action, $data );
-			
 			if ( empty( $errors ) ) {
 				$data["item_meta"][ $action->post_content['form_destination_primary_key'] ] = $primary_data;
 				if ( ! empty( $result ) && is_array( $result ) ) {
 					foreach ( $result as $entry_id ) {
+						if ( ! empty( $action->post_content['form_destination_persist_enabled'] ) && '1' === $action->post_content['form_destination_persist_enabled'] ) {
+							$data["item_meta"] = $this->get_target_value_for_field( $entry_id, $data["item_meta"], $persist_fields );
+						}
 						FrmEntryMeta::update_entry_metas( $entry_id, $data["item_meta"] );
 					}
 				} else {
@@ -260,13 +250,29 @@ class FormidableCopyAction extends FrmFormAction {
 			}
 		} else {
 			$errors = $this->validate_entries( $action, $data );
-			
 			if ( empty( $errors ) ) {
 				FrmEntry::create( $data );
 			}
 		}
 	}
-	
+	/**
+	 * Set the field value from the target field, it is used when the persist option is set to true
+	 *
+	 * @param $entry_id
+	 * @param $meta
+	 * @param $persist_fields
+	 *
+	 * @return array
+	 */
+	public function get_target_value_for_field( $entry_id, $meta, $persist_fields ) {
+		$target_entry = FrmEntry::getOne( $entry_id, true );
+		foreach ( $persist_fields as $target_key => $source_keys ) {
+			if ( empty( $meta[ $target_key ] ) ) {
+				$meta[ $target_key ] = $target_entry->metas[ $target_key ];
+			}
+		}
+		return $meta;
+	}
 	/**
 	 * Get the HTML for your action settings
 	 *
@@ -277,10 +283,9 @@ class FormidableCopyAction extends FrmFormAction {
 	 */
 	public function form( $form_action, $args = array() ) {
 		extract( $args );
-		$form           = $args['form'];
-		$fields         = $args['values']['fields'];
-		$action_control = $this;
-		
+		$form             = $args['form'];
+		$fields           = $args['values']['fields'];
+		$action_control   = $this;
 		$allow_validation = "";
 		if ( $form_action->post_content['form_validate_data'] == "1" ) {
 			$allow_validation = "checked='checked'";
@@ -296,103 +301,101 @@ class FormidableCopyAction extends FrmFormAction {
 		} else {
 			$show_primary_key = "style='display:none;'";
 		}
-		
 		$allow_persist = "";
 		if ( ! empty( $form_action->post_content['form_destination_persist_enabled'] ) && $form_action->post_content['form_destination_persist_enabled'] == '1' ) {
 			$allow_persist = "checked='checked'";
 		}
-		
 		if ( $form->status === 'published' ) {
 			?>
-            <style>
-                <?php echo "#pda-loading-".$this->number."{ display: none; }"; ?>
-                <?php echo "#primary-loading-".$this->number."{ display: none; }"; ?>
-            </style>
-            <input type="hidden" name="form-nonce-<?= $this->number ?>" id="form-nonce-<?= $this->number ?>" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
-            <input type="hidden" value="<?= esc_attr( $form_action->post_content['form_id'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_id' ) ?>">
-            <input type="hidden" value="<?= esc_attr( $form_action->post_content['form_destination_data'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_destination_data' ) ?>">
-            <h3 id="copy_section"><?= FormidableCopyActionManager::t( 'Put data to destination form ' ) ?></h3>
-            <hr/>
-            <table class="form-table frm-no-margin">
-                <tbody id="copy-table-body">
-                <tr>
-                    <th>
-                        <label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></b></label>
-                    </th>
-                    <td>
-                        <input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
+			<style>
+				<?php echo "#pda-loading-".$this->number."{ display: none; }"; ?>
+				<?php echo "#primary-loading-".$this->number."{ display: none; }"; ?>
+			</style>
+			<input type="hidden" name="form-nonce-<?= $this->number ?>" id="form-nonce-<?= $this->number ?>" form-copy-security="<?= base64_encode( 'get_form_fields' ); ?>">
+			<input type="hidden" value="<?= esc_attr( $form_action->post_content['form_id'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_id' ) ?>">
+			<input type="hidden" value="<?= esc_attr( $form_action->post_content['form_destination_data'] ); ?>" name="<?php echo $action_control->get_field_name( 'form_destination_data' ) ?>">
+			<h3 id="copy_section"><?= FormidableCopyActionManager::t( 'Put data to destination form ' ) ?></h3>
+			<hr/>
+			<table class="form-table frm-no-margin">
+				<tbody id="copy-table-body">
+				<tr>
+					<th>
+						<label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
 						<?= FormidableCopyActionManager::t( "If you check this, the action validate the entry values before insert into the destination form." ) ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        <label for="repeatable_section_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Repeatable as Single: ' ); ?></b></label>
-                    </th>
-                    <td>
-                        <input type="checkbox" <?= $form_destination_repeatable ?> name="<?php echo $action_control->get_field_name( 'form_destination_repeatable' ) ?>" id="repeatable_section_<?= $this->number ?>" value="1"/>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<label for="repeatable_section_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Repeatable as Single: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" <?= $form_destination_repeatable ?> name="<?php echo $action_control->get_field_name( 'form_destination_repeatable' ) ?>" id="repeatable_section_<?= $this->number ?>" value="1"/>
 						<?= FormidableCopyActionManager::t( "If you check this, each item in a repeatable section will be send to the destination." ) ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label> <b><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></b></label></th>
-                    <td>
+					</td>
+				</tr>
+				<tr>
+					<th><label> <b><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></b></label></th>
+					<td>
 						<?php FrmFormsHelper::forms_dropdown( $action_control->get_field_name( 'form_destination_id' ), $form_action->post_content['form_destination_id'], array( 'inc_children' => 'include' ) ); ?>
-                        <input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn-<?= $this->number ?>" name="copy-select-form-btn">
-                        <img id="pda-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        <label for="allow_update_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Update destination: ' ); ?></b></label>
-                    </th>
-                    <td>
-                        <input type="checkbox" class="fac_allow_primary_update" <?= $allow_update ?> action-id="<?php echo $this->number; ?>" form-copy-security="<?= base64_encode( 'get_form_update_fields' ); ?>" target_form="<?php echo $form_action->post_content['form_destination_id'] ?>" target="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" persist="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" name="<?php echo $action_control->get_field_name( 'form_destination_primary_enabled' ) ?>" id="allow_update_<?= $this->number ?>" value="1"/>
+						<input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn-<?= $this->number ?>" name="copy-select-form-btn">
+						<img id="pda-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<label for="allow_update_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Update destination: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" class="fac_allow_primary_update" <?= $allow_update ?> action-id="<?php echo $this->number; ?>" form-copy-security="<?= base64_encode( 'get_form_update_fields' ); ?>" target_form="<?php echo $form_action->post_content['form_destination_id'] ?>" target="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" persist="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" name="<?php echo $action_control->get_field_name( 'form_destination_primary_enabled' ) ?>" id="allow_update_<?= $this->number ?>" value="1"/>
 						<?= FormidableCopyActionManager::t( "If you check this, if the primary field selected exist in the destination the entry will be updated." ) ?>
-                    </td>
-                </tr>
-                <tr <?php echo "$show_primary_key"; ?>>
-                    <th>
-                        <label for="allow_persist_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Persist data: ' ); ?></b></label>
-                    </th>
-                    <td>
-                        <input type="checkbox" class="fac_allow_pesist" <?= $allow_persist ?> name="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" id="allow_persist_<?= $this->number ?>" value="1"/>
+					</td>
+				</tr>
+				<tr <?php echo "$show_primary_key"; ?>>
+					<th>
+						<label for="allow_persist_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Persist data: ' ); ?></b></label>
+					</th>
+					<td>
+						<input type="checkbox" class="fac_allow_pesist" <?= $allow_persist ?> name="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" id="allow_persist_<?= $this->number ?>" value="1"/>
 						<?= FormidableCopyActionManager::t( "This option is to persist the target data when the source form save an empty field." ) ?>
-                    </td>
-                </tr>
-                <tr <?php echo "$show_primary_key"; ?>>
-                    <th><label> <b><?= FormidableCopyActionManager::t( ' Primary Field: ' ); ?></b></label></th>
-                    <td>
-                        <select name="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" id="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>">
+					</td>
+				</tr>
+				<tr <?php echo "$show_primary_key"; ?>>
+					<th><label> <b><?= FormidableCopyActionManager::t( ' Primary Field: ' ); ?></b></label></th>
+					<td>
+						<select name="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" id="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>">
 							<?php
 							if ( ! empty( $form_action->post_content['form_destination_id'] ) ) {
 								echo FormidableCopyActionAdmin::getUpdateFields( $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_primary_key'] );
 							}
 							?>
-                        </select>
-                        <img id="primary-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <hr/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <table class="form-table frm-no-margin" id="copy-table-content-<?= $this->number ?>">
+						</select>
+						<img id="primary-loading-<?= $this->number ?>" src="/wp-content/plugins/formidable/images/ajax_loader.gif" alt="Procesando"/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<hr/>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<table class="form-table frm-no-margin" id="copy-table-content-<?= $this->number ?>">
 				<?php
 				if ( isset( $form_action->post_content['form_destination_id'] ) && ! empty( $form_action->post_content['form_destination_id'] ) ) {
 					echo FormidableCopyActionAdmin::getFormFields( $this->number, $form_action->post_content['form_destination_id'], $form_action->post_content['form_destination_data'] );
 				}
 				?>
-            </table>
+			</table>
 			<?php
 		} else {
 			echo FormidableCopyActionManager::t( 'The form need to published.' );
 		}
 		$language = substr( get_bloginfo( 'language' ), 0, 2 );
 		?>
-        <script>
+		<script>
 			function myToggleAllowedShortCodes(id) {
 				if (typeof(id) == 'undefined') {
 					id = '';
@@ -520,10 +523,9 @@ class FormidableCopyAction extends FrmFormAction {
 			<?php if(isset( $form_action->post_content['form_destination_id'] ) && ! empty( $form_action->post_content['form_destination_id'] )){ ?>
 			
 			<?php }    ?>
-        </script>
+		</script>
 		<?php
 	}
-	
 	/**
 	 * Add the default values for your options here
 	 */
@@ -538,11 +540,9 @@ class FormidableCopyAction extends FrmFormAction {
 			'form_destination_repeatable'      => '',
 			'form_destination_persist_enabled' => '',
 		);
-		
 		if ( $this->form_id != null ) {
 			$result['form_id'] = $this->form_id;
 		}
-		
 		return $result;
 	}
 }
