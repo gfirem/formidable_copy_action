@@ -121,22 +121,6 @@ class FormidableCopyAction extends FrmFormAction {
 						}
 					}
 				}
-//				if ( ! empty( $needed_fields ) ) {
-//					$old_values = array();
-//					foreach ( $needed_fields as $needed_field_key => $needed_field_value ) {
-//						$value                           = FrmEntryMeta::get_entry_metas_for_field( $needed_field_value[0] );
-//						if ( ! empty( $value ) && ! empty( $value[0] ) ) {
-//							$old_values[ $needed_field_key ] = $value[0];
-//							if ( isset( $entry->metas[ $needed_field_key ] ) ) {
-//								$entry->metas[ $needed_field_value[0] ] = $value[0];
-//							} else {
-//								$entry->metas[ $needed_field_value[0] ] = '';
-//							}
-//						} else {
-//							$entry->metas[ $needed_field_value[0] ] = '';
-//						}
-//					}
-//				}
 			}
 		}
 		$form_destination_repeatable = ! empty( $action->post_content['form_destination_repeatable'] );
