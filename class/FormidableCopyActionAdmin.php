@@ -126,7 +126,7 @@ class FormidableCopyActionAdmin {
 				$result .= '
 				<tr>
 					<th>
-						<label for="' . $field['field_key'] . '"> <b>' . $field['name'] . '</b></label>
+						<label for="' . $field['field_key'] . '"> <strong>' . $field['name'] . '</strong></label>
 					</th>
 					<td>
 						<textarea id="' . $field['field_key'] . '" name="' . $field['id'] . '" class="frm_formidable_copy_field_' . $instanceNumber . ' ' . $class . ' large-text">' . $value . '</textarea>

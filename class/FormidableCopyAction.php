@@ -304,7 +304,7 @@ class FormidableCopyAction extends FrmFormAction {
 				<tbody id="copy-table-body">
 				<tr>
 					<th>
-						<label for="allow_validation_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></b></label>
+						<label for="allow_validation_<?= $this->number ?>"> <strong><?= FormidableCopyActionManager::t( ' Validate destination: ' ); ?></strong></label>
 					</th>
 					<td>
 						<input type="checkbox" <?= $allow_validation ?> name="<?php echo $action_control->get_field_name( 'form_validate_data' ) ?>" id="allow_validation_<?= $this->number ?>" value="1"/>
@@ -313,7 +313,7 @@ class FormidableCopyAction extends FrmFormAction {
 				</tr>
 				<tr>
 					<th>
-						<label for="repeatable_section_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Repeatable as Single: ' ); ?></b></label>
+						<label for="repeatable_section_<?= $this->number ?>"> <strong><?= FormidableCopyActionManager::t( ' Repeatable as Single: ' ); ?></strong></label>
 					</th>
 					<td>
 						<input type="checkbox" <?= $form_destination_repeatable ?> name="<?php echo $action_control->get_field_name( 'form_destination_repeatable' ) ?>" id="repeatable_section_<?= $this->number ?>" value="1"/>
@@ -321,7 +321,7 @@ class FormidableCopyAction extends FrmFormAction {
 					</td>
 				</tr>
 				<tr>
-					<th><label> <b><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></b></label></th>
+					<th><label> <strong><?= FormidableCopyActionManager::t( ' Form destination: ' ); ?></strong></label></th>
 					<td>
 						<?php FrmFormsHelper::forms_dropdown( $action_control->get_field_name( 'form_destination_id' ), $form_action->post_content['form_destination_id'], array( 'inc_children' => 'include' ) ); ?>
 						<input type="button" value="<?= FormidableCopyActionManager::t( "Select" ) ?>" id="copy-select-form-btn-<?= $this->number ?>" name="copy-select-form-btn">
@@ -330,7 +330,7 @@ class FormidableCopyAction extends FrmFormAction {
 				</tr>
 				<tr>
 					<th>
-						<label for="allow_update_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Update destination: ' ); ?></b></label>
+						<label for="allow_update_<?= $this->number ?>"> <strong><?= FormidableCopyActionManager::t( ' Update destination: ' ); ?></strong></label>
 					</th>
 					<td>
 						<input type="checkbox" class="fac_allow_primary_update" <?= $allow_update ?> action-id="<?php echo $this->number; ?>" form-copy-security="<?= base64_encode( 'get_form_update_fields' ); ?>" target_form="<?php echo $form_action->post_content['form_destination_id'] ?>" target="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" persist="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" name="<?php echo $action_control->get_field_name( 'form_destination_primary_enabled' ) ?>" id="allow_update_<?= $this->number ?>" value="1"/>
@@ -339,7 +339,7 @@ class FormidableCopyAction extends FrmFormAction {
 				</tr>
 				<tr <?php echo "$show_primary_key"; ?>>
 					<th>
-						<label for="allow_persist_<?= $this->number ?>"> <b><?= FormidableCopyActionManager::t( ' Persist data: ' ); ?></b></label>
+						<label for="allow_persist_<?= $this->number ?>"> <strong><?= FormidableCopyActionManager::t( ' Persist data: ' ); ?></strong></label>
 					</th>
 					<td>
 						<input type="checkbox" class="fac_allow_pesist" <?= $allow_persist ?> name="<?php echo $action_control->get_field_name( 'form_destination_persist_enabled' ) ?>" id="allow_persist_<?= $this->number ?>" value="1"/>
@@ -347,7 +347,7 @@ class FormidableCopyAction extends FrmFormAction {
 					</td>
 				</tr>
 				<tr <?php echo "$show_primary_key"; ?>>
-					<th><label> <b><?= FormidableCopyActionManager::t( ' Primary Field: ' ); ?></b></label></th>
+					<th><label> <strong><?= FormidableCopyActionManager::t( ' Primary Field: ' ); ?></strong></label></th>
 					<td>
 						<select name="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>" id="<?php echo $action_control->get_field_name( 'form_destination_primary_key' ) ?>">
 							<?php
