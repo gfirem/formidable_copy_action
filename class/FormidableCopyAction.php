@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 class FormidableCopyAction extends FrmFormAction {
 	protected $form_default = array( 'wrk_name' => '' );
+	
 	public function __construct() {
 		try {
 			// check if is paying
@@ -30,6 +31,7 @@ class FormidableCopyAction extends FrmFormAction {
 			) );
 		}
 	}
+	
 	/**
 	 * Add styles to action icon
 	 */
@@ -53,6 +55,7 @@ class FormidableCopyAction extends FrmFormAction {
 			<?php
 		}
 	}
+	
 	/**
 	 * Formidable create action
 	 *
@@ -63,6 +66,7 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onCreate( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
+	
 	/**
 	 * Formidable update action
 	 *
@@ -73,6 +77,7 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onUpdate( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
+	
 	/**
 	 * Formidable update action
 	 *
@@ -83,6 +88,7 @@ class FormidableCopyAction extends FrmFormAction {
 	public function onDelete( $action, $entry, $form ) {
 		$this->processAction( $action, $entry );
 	}
+	
 	/**
 	 * Process source action to create entry in destination form
 	 *
@@ -169,6 +175,7 @@ class FormidableCopyAction extends FrmFormAction {
 			}
 		}
 	}
+	
 	/**
 	 * Validate the entry if necessary
 	 *
@@ -195,8 +202,10 @@ class FormidableCopyAction extends FrmFormAction {
 				) );
 			}
 		}
+		
 		return $errors;
 	}
+	
 	/**
 	 * Insert data in destination form
 	 *
@@ -239,6 +248,7 @@ class FormidableCopyAction extends FrmFormAction {
 			}
 		}
 	}
+	
 	/**
 	 * Set the field value from the target field, it is used when the persist option is set to true
 	 *
@@ -255,8 +265,10 @@ class FormidableCopyAction extends FrmFormAction {
 				$meta[ $target_key ] = $target_entry->metas[ $target_key ];
 			}
 		}
+		
 		return $meta;
 	}
+	
 	/**
 	 * Get the HTML for your action settings
 	 *
@@ -380,41 +392,7 @@ class FormidableCopyAction extends FrmFormAction {
 		$language = substr( get_bloginfo( 'language' ), 0, 2 );
 		?>
 		<script>
-			function myToggleAllowedShortCodes(id) {
-				if (typeof(id) == 'undefined') {
-					id = '';
-				}
-				var c = id;
 
-				if (id !== '') {
-					var $ele = jQuery(document.getElementById(id));
-					if ($ele.attr('class') && id !== 'wpbody-content' && id !== 'content' && id !== 'dyncontent' && id != 'success_msg') {
-						var d = $ele.attr('class').split(' ')[0];
-						if (d == 'frm_long_input' || typeof d == 'undefined') {
-							d = '';
-						} else {
-							id = jQuery.trim(d);
-						}
-						c = c + ' ' + d;
-					}
-				}
-				jQuery('#frm-insert-fields-box,#frm-conditionals,#frm-adv-info-tab,#frm-html-tags,#frm-layout-classes,#frm-dynamic-values').removeClass().addClass('tabs-panel ' + c);
-
-				if (id == 'frm_formidable_copy_field_<?= $this->number ?>') {
-					jQuery('.frm_code_list a').removeClass('frm_noallow').addClass('frm_allow');
-					jQuery('.frm_code_list a.hide_' + id).addClass('frm_noallow').removeClass('frm_allow');
-				} else {
-					jQuery('.frm_code_list a').addClass('frm_noallow').removeClass('frm_allow');
-				}
-			}
-
-			jQuery(document).on('focusin click', 'form input, form textarea, #wpcontent', function (e) {
-				e.stopPropagation();
-				if (jQuery(this).is(':not(:submit, input[type=button])') && jQuery(this).hasClass("frm_formidable_copy_field_<?= $this->number ?>")) {
-					var id = jQuery(this).attr('id');
-					myToggleAllowedShortCodes(id);
-				}
-			});
 
 
 			function get_update_fields($, actionId, form_drop_down, form_copy_security, target, persist) {
@@ -510,6 +488,7 @@ class FormidableCopyAction extends FrmFormAction {
 		</script>
 		<?php
 	}
+	
 	/**
 	 * Add the default values for your options here
 	 */
@@ -527,6 +506,7 @@ class FormidableCopyAction extends FrmFormAction {
 		if ( $this->form_id != null ) {
 			$result['form_id'] = $this->form_id;
 		}
+		
 		return $result;
 	}
 }

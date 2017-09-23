@@ -1,19 +1,14 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 class FormidableCopyActionAdmin {
-	
 	public function __construct() {
 		$this->add_menu();
 		if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_js' ) );
 			add_action( 'wp_ajax_get_form_fields', array( $this, 'ajaxGetFormFields' ) );
-//		add_action( 'wp_ajax_nopriv_get_form_fields', array( $this, 'ajaxGetFormFields' ) ); //Not needed only work from the admin
 			add_action( 'wp_ajax_get_form_update_fields', array( $this, 'ajaxGetUpdateFields' ) );
-//		add_action( 'wp_ajax_nopriv_get_form_update_fields', array( $this, 'ajaxGetUpdateFields' ) ); //Not needed only work from the admin
 			add_filter( 'wp_kses_allowed_html', array( $this, 'allowedHtml' ), 10, 2 );
 			add_shortcode( "form-copy-security", array( $this, 'formSecContent' ) );
 		}
@@ -73,7 +68,7 @@ class FormidableCopyActionAdmin {
 	/**
 	 * Return nonce for given action in shortCode
 	 *
-	 * @param $attr
+	 * @param      $attr
 	 * @param null $content
 	 *
 	 * @return string
@@ -82,7 +77,6 @@ class FormidableCopyActionAdmin {
 		$internal_attr = shortcode_atts( array(
 			'act' => 'get_form_field',
 		), $attr );
-		
 		$nonce = base64_encode( $internal_attr['act'] );
 		
 		return $nonce;
@@ -100,9 +94,7 @@ class FormidableCopyActionAdmin {
 	public static function getFormFields( $instanceNumber, $formId, $formData ) {
 		global $frm_field;
 		$fields = $frm_field->getAll( array( 'fi.form_id' => $formId ), 'field_order' );
-		
 		$result = "<tbody>";
-		
 		foreach ( $fields as $field ) {
 			$field            = (array) $field;
 			$unusedFieldsType = array( 'divider', 'end_divider', 'file', 'captcha' );
@@ -129,7 +121,7 @@ class FormidableCopyActionAdmin {
 						<label for="' . $field['field_key'] . '"> <strong>' . $field['name'] . '</strong></label>
 					</th>
 					<td>
-						<textarea id="' . $field['field_key'] . '" name="' . $field['id'] . '" class="frm_formidable_copy_field_' . $instanceNumber . ' ' . $class . ' large-text">' . $value . '</textarea>
+						<textarea id="' . $field['field_key'] . '" name="' . $field['id'] . '" class="frm_copy_action_field frm_formidable_copy_field_' . $instanceNumber . ' ' . $class . ' large-text">' . $value . '</textarea>
 					</td>
 				</tr>
 				<tr>
@@ -181,13 +173,10 @@ class FormidableCopyActionAdmin {
 		if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return;
 		}
-		
 		if ( ! isset( $_POST['action'] ) || base64_decode( $_POST['form-copy-security'] ) != $_POST['action'] ) {
 			die();
 		}
-		
 		echo self::getFormFields( FrmAppHelper::get_post_param( 'form-instance-number' ), FrmAppHelper::get_post_param( 'form_destination_id' ), null );
-		
 		die();
 	}
 	
@@ -198,13 +187,10 @@ class FormidableCopyActionAdmin {
 		if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return;
 		}
-		
 		if ( ! isset( $_POST['action'] ) || base64_decode( $_POST['form-copy-security'] ) != $_POST['action'] ) {
 			die();
 		}
-		
 		echo self::getUpdateFields( FrmAppHelper::get_post_param( 'form_destination_id' ) );
-		
 		die();
 	}
 }
