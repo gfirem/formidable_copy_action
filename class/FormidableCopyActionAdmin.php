@@ -92,8 +92,7 @@ class FormidableCopyActionAdmin {
 	 * @return string
 	 */
 	public static function getFormFields( $instanceNumber, $formId, $formData ) {
-		global $frm_field;
-		$fields = $frm_field->getAll( array( 'fi.form_id' => $formId ), 'field_order' );
+		$fields = FrmField::getAll( array( 'fi.form_id' => $formId ), 'field_order' );
 		$result = "<tbody>";
 		foreach ( $fields as $field ) {
 			$field            = (array) $field;

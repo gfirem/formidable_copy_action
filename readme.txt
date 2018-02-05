@@ -1,9 +1,9 @@
 === Formidable Copy Action ===
 Contributors: gfirem
 Tags: formidable, copy form entries, formidable action, formidable copy form entries, custom action, update entries between form
-Requires at least: 4.5.0
-Tested up to: 4.8.2
-Stable tag: 2.0.9
+Requires at least: 4.8.0
+Tested up to: 4.9
+Stable tag: 2.1.1
 License: Apache License 2.0
 
 Add action to push data to another form. You can validate it or update if exist.
@@ -12,6 +12,14 @@ Add action to push data to another form. You can validate it or update if exist.
 Add action to send data to another form. Is possible to update, also exist the option to push only the data inside a repeatable section.
 
 == Changelog ==
+= 2.1.1 =
+* Updating Freemius.
+* Adding trial support.
+
+= 2.1.0 =
+* Fixing the option to persist data in the target form.
+* Updating some deprecated functions.
+
 = 2.0.9 =
 * Fixing the assets generated from the sh script.
 

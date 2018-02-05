@@ -16,17 +16,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FormidableCopyActionManager {
 	protected static $plugin_slug = 'formidable-copy-action';
 	protected static $plugin_short = 'FormidableCopyAction';
-	protected static $version = '2.0.9';
+	protected static $version = '2.1.1';
 	
 	public function __construct() {
 		require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionLogs.php';
 		try {
-			if ( self::is_formidable_active() ) {
+			if ( class_exists( 'FrmAppHelper' ) && method_exists( 'FrmAppHelper', 'pro_is_installed' )
+			     && FrmAppHelper::pro_is_installed() ) {
 				require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionAdmin.php';
 				new FormidableCopyActionAdmin();
 				if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
 					add_action( 'frm_registered_form_actions', array( $this, 'register_action' ) );
 				}
+			} else {
+				add_action( 'admin_notices', array( $this, 'required_formidable_pro' ) );
 			}
 		} catch ( Exception $ex ) {
 			FormidableCopyActionLogs::log( array(
@@ -37,6 +40,18 @@ class FormidableCopyActionManager {
 			) );
 		}
 		
+	}
+
+	public function required_formidable_pro() {
+		?>
+		<div class="error">
+			<p>
+				<?php
+				_e( '<b>Formidable Copy Action</b> requires that Formidable Pro version 2.0 or greater be installed. Until then, keep plugin activated only to continue enjoying this insightful message.', 'formidable_key_field-locale' );
+				?>
+			</p>
+		</div>
+		<?php
 	}
 	
 	/**
