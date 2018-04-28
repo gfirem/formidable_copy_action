@@ -1,5 +1,11 @@
-.dashicons, .dashicons-before::before .copy_action_icon {
-    height: auto;
-    width: auto;
-    font-size: 13px;
+.frm_formidable_copy_action.frm_bstooltip.frm_active_action.dashicons.dashicons-admin-page.copy_action_icon:before,
+.frm_form_action_icon.dashicons.dashicons-admin-page.copy_action_icon:before {
+	color: #dc5958 !important;
+}
+
+.frm_formidable_copy_action.frm_bstooltip.frm_active_action.dashicons.dashicons-admin-page.copy_action_icon,
+.frm_form_action_icon.dashicons.dashicons-admin-page.copy_action_icon {
+	height: auto;
+	width: auto;
+	font-size: 13px;
 }

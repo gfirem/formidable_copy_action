@@ -67,6 +67,7 @@ if ( ! class_exists( 'formidable_copy_action' ) ) {
 			define( 'COPY_ACTION_CSS_PATH', plugin_dir_url( __FILE__ ) . '/assets/css/' );
 			define( 'COPY_ACTION_JS_PATH', plugin_dir_url( __FILE__ ) . '/assets/js/' );
 			define( 'COPY_ACTION_CLASSES_PATH', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR );
+			define( 'COPY_ACTION_VIEW_PATH', dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR );
 		}
 		
 		/**
