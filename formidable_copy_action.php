@@ -1,11 +1,11 @@
 <?php
 /**
- * @package WordPress
+ * @package    WordPress
  * @subpackage Formidable, formidable_copy_action
- * @author GFireM
- * @copyright 2017
- * @link http://www.gfirem.com
- * @license http://www.apache.org/licenses/
+ * @author     GFireM
+ * @copyright  2017
+ * @link       http://www.gfirem.com
+ * @license    http://www.apache.org/licenses/
  *
  */
 
@@ -62,7 +62,7 @@ if ( ! class_exists( 'formidable_copy_action' ) ) {
 			}
 		}
 		
-		private function constants(){
+		private function constants() {
 			define( 'COPY_ACTION_BASE_NAME', plugin_basename( __FILE__ ) );
 			define( 'COPY_ACTION_CSS_PATH', plugin_dir_url( __FILE__ ) . '/assets/css/' );
 			define( 'COPY_ACTION_JS_PATH', plugin_dir_url( __FILE__ ) . '/assets/js/' );
@@ -91,5 +91,10 @@ if ( ! class_exists( 'formidable_copy_action' ) ) {
 		}
 	}
 	
-	add_action( 'plugins_loaded', array( 'formidable_copy_action', 'get_instance' ), 1);
+	function gfirem_copy_entries_loader() {
+		global $gfirem;
+		$gfirem[ FormidableCopyActionFreemius::$plugins_slug ]['instance'] = formidable_copy_action::get_instance();
+	}
+	
+	add_action( 'plugins_loaded', 'gfirem_copy_entries_loader' );
 }

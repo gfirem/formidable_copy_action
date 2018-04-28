@@ -33,7 +33,7 @@ class FormidableCopyActionRequirements extends WP_Requirement {
 		array_push( $requirements, $requirement );
 		$requirement          = new WP_Plugins_Requirement();
 		$requirement->plugins = array(
-			array( 'id' => 'formidable/formidable.php', 'name' => 'Formidable', 'min_version' => '2.0.0' )
+			array( 'id' => 'formidable/formidable.php', 'name' => 'Formidable', 'min_version' => '3.0.0' )
 		);
 		array_push( $requirements, $requirement );
 		

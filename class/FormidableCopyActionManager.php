@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
 class FormidableCopyActionManager {
 	protected static $plugin_slug = 'formidable-copy-action';
 	protected static $plugin_short = 'FormidableCopyAction';
@@ -25,7 +24,7 @@ class FormidableCopyActionManager {
 			     && FrmAppHelper::pro_is_installed() ) {
 				require_once COPY_ACTION_CLASSES_PATH . 'FormidableCopyActionAdmin.php';
 				new FormidableCopyActionAdmin();
-				if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
+				if ( FormidableCopyActionFreemius::getFreemius()->is_paying_or_trial() ) {
 					add_action( 'frm_registered_form_actions', array( $this, 'register_action' ) );
 				}
 			} else {

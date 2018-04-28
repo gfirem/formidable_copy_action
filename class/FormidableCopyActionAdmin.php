@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FormidableCopyActionAdmin {
 	public function __construct() {
 		$this->add_menu();
-		if ( FormidableCopyActionFreemius::getFreemius()->is_paying() ) {
+		if ( FormidableCopyActionFreemius::getFreemius()->is_paying_or_trial() ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_js' ) );
 			add_action( 'wp_ajax_get_form_fields', array( $this, 'ajaxGetFormFields' ) );
 			add_action( 'wp_ajax_get_form_update_fields', array( $this, 'ajaxGetUpdateFields' ) );

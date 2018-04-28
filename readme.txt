@@ -2,7 +2,7 @@
 Contributors: gfirem
 Tags: formidable, copy form entries, formidable action, formidable copy form entries, custom action, update entries between form
 Requires at least: 4.8.0
-Tested up to: 4.9
+Tested up to: 4.9.5
 Stable tag: 2.1.1
 License: Apache License 2.0
 
@@ -15,6 +15,7 @@ Add action to send data to another form. Is possible to update, also exist the o
 = 2.1.1 =
 * Updating Freemius.
 * Adding trial support.
+* Improving the loader for the plugin.
 
 = 2.1.0 =
 * Fixing the option to persist data in the target form.
